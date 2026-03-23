@@ -33,16 +33,16 @@
 
 ---
 
-## Phase 1: Setup — Proyecto e Infraestructura Base
+## Phase 1: Setup — Proyecto e Infraestructura Base ✅
 
 **Purpose**: Inicialización del proyecto, tokens de diseño y estructura de carpetas.
 
-- [ ] T001 Crear proyecto Vite 6 + React 19 + TypeScript 5.7 con `npm create vite@latest expenses -- --template react-ts`
-- [ ] T002 Instalar dependencias de producción: `npm install zustand big.js`
-- [ ] T003 Instalar dependencias de desarrollo: `npm install -D tailwindcss @tailwindcss/vite`
-- [ ] T004 Configurar plugin Tailwind v4 en `vite.config.ts` — agregar `tailwindcss()` al array `plugins`
-- [ ] T005 Reemplazar `src/index.css` con `@import "tailwindcss"` y tokens del Design System
-- [ ] T006 Crear `src/index.css` con las custom properties del Design System "The Digital Ledger":
+- [x] T001 Crear proyecto Vite 6 + React 19 + TypeScript 5.7 con `npm create vite@latest expenses -- --template react-ts`
+- [x] T002 Instalar dependencias de producción: `npm install zustand big.js`
+- [x] T003 Instalar dependencias de desarrollo: `npm install -D tailwindcss @tailwindcss/vite`
+- [x] T004 Configurar plugin Tailwind v4 en `vite.config.ts` — agregar `tailwindcss()` al array `plugins`
+- [x] T005 Reemplazar `src/index.css` con `@import "tailwindcss"` y tokens del Design System
+- [x] T006 Crear `src/index.css` con las custom properties del Design System "The Digital Ledger":
   ```css
   @import 'tailwindcss';
   @theme {
@@ -55,111 +55,91 @@
     --radius-lg: 0px;
   }
   ```
-- [ ] T007 [P] Descargar assets Stitch — Dashboard HTML: `curl -L "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzdjY2E4NTg0ZTFhZjQ1ZGI5MTI5YmNiZTdkNzIwYzQ0EgsSBxCEof6_1BcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA3NTQzOTQwNzQzNzg1NjI5NQ&filename=&opi=89354086" -o src/assets/stitch-dashboard.html`
-- [ ] T008 [P] Descargar assets Stitch — Quick Entry Modal HTML: `curl -L "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2E1NWM4YmQ5MTAyNTQwNWZiYzBhMTRkZGZiNGU4NzA3EgsSBxCEof6_1BcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA3NTQzOTQwNzQzNzg1NjI5NQ&filename=&opi=89354086" -o src/assets/stitch-quick-entry-modal.html`
-- [ ] T009 Crear estructura de carpetas: `src/core/math/`, `src/core/storage/`, `src/features/budget/`, `src/features/expense-registration/`, `src/features/expense-history/`, `src/store/`, `src/types/`
-- [ ] T010 [P] Configurar ESLint + Prettier con reglas para TypeScript y React 19 en `eslint.config.js` y `.prettierrc`
+- [x] T007 [P] Descargar assets Stitch — Dashboard HTML: `curl -L "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzdjY2E4NTg0ZTFhZjQ1ZGI5MTI5YmNiZTdkNzIwYzQ0EgsSBxCEof6_1BcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA3NTQzOTQwNzQzNzg1NjI5NQ&filename=&opi=89354086" -o src/assets/stitch-dashboard.html`
+- [x] T008 [P] Descargar assets Stitch — Quick Entry Modal HTML: `curl -L "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2E1NWM4YmQ5MTAyNTQwNWZiYzBhMTRkZGZiNGU4NzA3EgsSBxCEof6_1BcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzA3NTQzOTQwNzQzNzg1NjI5NQ&filename=&opi=89354086" -o src/assets/stitch-quick-entry-modal.html`
+- [x] T009 Crear estructura de carpetas: `src/core/math/`, `src/core/storage/`, `src/features/budget/`, `src/features/expense-registration/`, `src/features/expense-history/`, `src/store/`, `src/types/`
+- [x] T010 [P] Configurar ESLint + Prettier con reglas para TypeScript y React 19 en `eslint.config.js` y `.prettierrc`
 
 **Checkpoint**: Proyecto creado, Tailwind v4 configurado con tokens, assets Stitch descargados, estructura de carpetas lista.
 
 ---
 
-## Phase 2: Foundational — Tipos, Core y Store
+## Phase 2: Foundational — Tipos, Core y Store ✅
 
 **Purpose**: Infraestructura compartida que TODA feature requiere. Nada puede implementarse sin esta fase.
 
 **⚠️ CRÍTICO**: Ninguna feature puede comenzar hasta completar esta fase.
 
-- [ ] T011 Crear `src/types/index.ts` — definir `Category`, `Gasto`, `Presupuesto`, `ResumenMensual`, `ExpenseStore`, `CATEGORIAS_TARJETA`, `esTarjeta` según contrato `contracts/store.md`
-- [ ] T012 [P] Crear `src/core/math/finance.ts` — funciones puras Big.js:
-  - `calcMontoCuota = (monto: number, cuotas: number): number` — `Big(monto).div(cuotas).round(2, 1).toNumber()`
-  - `calcTotalGastado = (gastos: Gasto[]): number` — reduce con `Big` sobre `monto_total`
-  - `calcSaldo = (presupuesto: number, totalGastado: number): number`
-  - Configurar `Big.RM = 1` (ROUND_HALF_UP) al inicio del módulo
-- [ ] T013 [P] Crear `src/core/storage/persist-config.ts` — exportar `STORAGE_KEY = 'expense-tracker-v1'` y función `partialize`
-- [ ] T014 Crear `src/store/expense-store.ts` — Zustand 5 store con `persist` middleware:
-  - Implementar todas las acciones del contrato: `setBudget`, `editBudget`, `addGasto`, `updateGasto`, `deleteGasto`, `resetAll`
-  - `getResumen` como selector puro usando `calcTotalGastado` y `calcSaldo` de `src/core/math/finance.ts`
-  - Agregar slice de navegación SPA: `isModalOpen: boolean`, `openModal: () => void`, `closeModal: () => void` (sin react-router)
-  - Usar `partialize` para excluir funciones de la serialización
-- [ ] T015 [P] Crear `src/shared/ui/primary-button.tsx` — botón con degradado primario del Design System (bg `primary` → hover 10% más oscuro), sin border radius (No-Line Rule)
-- [x] T016 [P] Crear `src/shared/ui/ledger-input.tsx` — input con estilo "The Digital Ledger": borde inferior 1px `primary`, sin bordes lateral/superior, fondo `surface-container-low`, sin outline en focus. **Naming rule**: los componentes UI propios del proyecto usan el prefijo `Ledger`; nunca hacer referencia a productos de terceros (ej. Notion) en nombres de componentes, interfaces ni comentarios.
+- [x] T011 Crear `src/types/index.ts` — `Category`, `Expense`, `Budget`, `MonthlySummary`, `CARD_CATEGORIES`, `CATEGORY_LABELS`, `isCardCategory`
+- [x] T012 [P] Crear `src/core/math/finance.ts` — `calcInstallmentAmount`, `calcTotalSpent`, `calcRemainingBalance` (Big.js, ROUND_HALF_UP)
+- [x] T013 [P] Crear `src/core/storage/persist-config.ts` — `STORAGE_KEY`, `partialize`
+- [x] T014 Crear `src/store/expense-store.ts` — Zustand 5 + persist: DataSlice + NavSlice (`isModalOpen`, `editingExpense`, `openModal`, `closeModal`, `openEditModal`)
+- [x] T015 [P] Crear `src/shared/ui/primary-button.tsx` — variantes primary/danger/ghost, No-Line Rule
+- [x] T016 [P] Crear `src/shared/ui/ledger-input.tsx` — borde inferior `primary`, fondo `surface-container-low`, sin outline en focus
 
 **Checkpoint**: Tipos, funciones de cálculo, store y componentes base compartidos listos. Features pueden implementarse en paralelo.
 
 ---
 
-## Phase 3: US1 — Configurar Presupuesto Mensual (Priority: P1) 🎯 MVP-A
+## Phase 3: US1 — Configurar Presupuesto Mensual ✅
 
 **Goal**: El usuario puede definir y editar el presupuesto mensual; el saldo se calcula al instante.
 
-**Independent Test**: Ingresar $50.000, confirmar y verificar que `getResumen().saldo_restante === 5000000` (centavos).
-
-- [ ] T017 [US1] Crear `src/features/budget/use-budget.ts` — hook que consume el store: expone `presupuesto`, `saldo`, `setBudget`, `editBudget`; valida que `monto > 0` antes de llamar al store; usa `getResumen()` para derivar `saldo_restante`
-- [ ] T018 [P] [US1] Crear `src/features/budget/budget-form.tsx` — componente presentacional: recibe `onSubmit(monto: number)`, `isEditing: boolean`; usa `ledger-input.tsx` y `primary-button.tsx`; sin lógica de validación interna
-- [ ] T019 [P] [US1] Crear `src/features/budget/budget-summary.tsx` — componente presentacional: recibe `presupuesto`, `totalGastado`, `saldoRestante`, `esNegativo`; aplica `text-[--color-primary]` para saldo positivo y `text-red-600` para negativo (FR-012); fondo `surface-container-low` con Tonal Layering
+- [x] T017 [US1] Crear `src/features/budget/use-budget.ts` — expone `budget`, `remainingBalance`, `totalSpent`, `isOverBudget`, `error`, `handleSetBudget`, `handleEditBudget`
+- [x] T018 [P] [US1] Crear `src/features/budget/budget-form.tsx` — `onSubmit(amount)`, `isEditing`, `error`; usa `LedgerInput` + `PrimaryButton`
+- [x] T019 [P] [US1] Crear `src/features/budget/budget-summary.tsx` — `budgetAmount`, `totalSpent`, `remainingBalance`, `isOverBudget`; `text-primary` / `text-red-600`; `bg-surface-container-low`
 
 **Checkpoint**: US1 completa y verificable de forma independiente.
 
 ---
 
-## Phase 4: US2 + US3 — Registro de Gastos y Resumen (Priority: P1) 🎯 MVP-B
+## Phase 4: US2 + US3 — Registro de Gastos y Resumen ✅
 
 **Goal**: El usuario registra un gasto con categoría, cuotas y ve el resumen actualizado instantáneamente.
 
-**Independent Test**: Registrar $12.000 en 3 cuotas con BBVA; verificar `monto_por_cuota === 400000` centavos y `saldo_restante` reducido en `1200000` centavos, todo en ≤ 300 ms.
-
-- [ ] T020 [US2] Crear `src/features/expense-registration/category-picker.tsx` — componente presentacional: recibe `value: Category`, `onChange(cat: Category) => void`; renderiza 4 botones/chips para BBVA, SUPERVIELLE, PRÉSTAMO, OTROS; selección activa con fondo `primary` y texto blanco; sin border radius (No-Line Rule); quick-select en un tap (FR-011)
-- [ ] T021 [US2] Crear `src/features/expense-registration/use-expense-form.ts` — hook: gestiona estado del formulario; detecta `esTarjeta(categoria)` para habilitar/deshabilitar campos de cuotas (FR-003); calcula `montoPorCuota` en tiempo real usando `calcMontoCuota` de `src/core/math/finance.ts` (FR-004); expone `autoFocusRef` para foco automático en monto (FR-010); valida todos los campos antes de llamar `addGasto`
-- [ ] T022 [US2] Crear `src/features/expense-registration/expense-form.tsx` — componente presentacional: recibe todas las props del hook; usa `autoFocusRef` en el input de monto; muestra/oculta sección de cuotas condicionalmente; usa `category-picker.tsx`, `ledger-input.tsx`, `primary-button.tsx`; flujo completo en ≤ 4 interacciones (SC-001)
-- [ ] T023 [US3] Crear `src/features/expense-history/expense-item.tsx` — componente presentacional: recibe un `Gasto`; muestra descripción, `categoria`, monto total formateado y, si es tarjeta, "Cuota X de Y — $monto_cuota"; fondo `surface-container-low`; sin divisores entre items (No-Line Rule)
-- [ ] T024 [US3] Crear `src/features/expense-history/expense-list.tsx` — componente presentacional: recibe `gastos: Gasto[]`; renderiza lista de `expense-item.tsx` con Tonal Layering alternado; muestra estado vacío con CTA cuando `gastos.length === 0`; sin `border` entre items (0px — No-Line Rule)
+- [x] T020 [US2] Crear `src/features/expense-registration/category-picker.tsx` — 4 chips en grid 2×2, activo=`bg-primary text-white`, No-Line Rule (border-b-2)
+- [x] T021 [US2] Crear `src/features/expense-registration/use-expense-form.ts` — validación completa, `showInstallments`, `amountPerInstallment` en tiempo real, `amountRef`
+- [x] T022 [US2] Crear `src/features/expense-registration/expense-form.tsx` — presentacional puro, cuotas condicionales, preview por cuota, cancelar opcional
+- [x] T023 [US3] Crear `src/features/expense-history/expense-item.tsx` — descripción, categoría, cuotas, botones edit/delete en hover con `aria-label`
+- [x] T024 [US3] Crear `src/features/expense-history/expense-list.tsx` — tonal layering alternado, estado vacío con CTA
 
 **Checkpoint**: US2 y US3 completas; formulario de registro y lista de gastos funcionan de forma independiente.
 
 ---
 
-## Phase 5: US4 — Editar y Eliminar Gastos (Priority: P2)
+## Phase 5: US4 — Editar y Eliminar Gastos ✅
 
 **Goal**: El usuario puede corregir o eliminar un gasto; el saldo refleja el cambio en ≤ 300 ms sin recarga.
 
-**Independent Test**: Editar monto de $5.000 a $8.000; verificar que `saldo_restante` disminuye en `300000` centavos sin recarga de página.
-
-- [ ] T025 [US4] Crear `src/features/expense-history/use-expenses.ts` — hook: consume `gastos`, `updateGasto`, `deleteGasto` del store; expone `handleEdit(id, changes)` y `handleDelete(id)`; actualización optimista: aplica cambio en UI primero, revierte si falla la persistencia (SC-002 + Principio IV)
-- [ ] T026 [US4] Actualizar `src/features/expense-history/expense-item.tsx` — agregar botones "Editar" y "Eliminar" como props opcionales `onEdit?` y `onDelete?`; sin cambios en lógica de presentación existente
-- [ ] T027 [US4] Crear `src/features/expense-history/edit-expense-modal.tsx` — componente presentacional: reutiliza `expense-form.tsx` precargado con los valores del gasto a editar; recibe `gasto: Gasto`, `onSave`, `onCancel`; se muestra/oculta con estado booleano del store (sin router)
+- [x] T025 [US4] Crear `src/features/expense-history/use-expenses.ts` — `handleEdit` (→`openEditModal`), `handleDelete`, `handleUpdate`
+- [x] T026 [US4] `expense-item.tsx` ya incluye `onEdit?`/`onDelete?` opcionales desde T023 ✓
+- [x] T027 [US4] Crear `src/features/expense-history/use-edit-expense-form.ts` + `edit-expense-modal.tsx` — modal con overlay, `role="dialog"`, `key={expense.id}`, reutiliza `ExpenseForm`
 
 **Checkpoint**: US4 completa; CRUD de gastos totalmente funcional.
 
 ---
 
-## Phase 6: US5 — Reiniciar Todo (Priority: P3)
+## Phase 6: US5 — Reiniciar Todo ✅
 
-**Goal**: El usuario puede limpiar todos los datos del mes con confirmación robusta (no ejecutable en un gesto involuntario).
+**Goal**: El usuario puede limpiar todos los datos del mes con confirmación robusta.
 
-**Independent Test**: Con gastos y presupuesto, ejecutar "Reiniciar Todo" → confirmar → verificar `gastos === []` y `presupuesto === null`.
-
-- [ ] T028 [US5] Crear `src/features/expense-history/reset-button.tsx` — componente presentacional: recibe `onConfirm: () => void`; al primer click muestra diálogo de confirmación inline (sin modal externo); el diálogo muestra advertencia explícita "Se borrarán todos los gastos y el presupuesto"; solo el botón de confirmación secundario llama `onConfirm`; cancelar descarta sin efecto (FR-007, SC-006)
-- [ ] T029 [US5] Conectar `reset-button.tsx` con acción `resetAll()` del store en `src/app.tsx`; verificar que `resetAll` limpia `localStorage` y resetea UI al estado inicial
+- [x] T028 [US5] Crear `src/features/expense-history/reset-button.tsx` — doble confirmación inline, advertencia roja explícita, cancelar seguro (FR-007, SC-006)
+- [x] T029 [US5] Conectar `reset-button.tsx` con `resetAll()` en `src/app.tsx` ← **implementado en T031**
 
 **Checkpoint**: US5 completa; "Reiniciar Todo" requiere siempre doble confirmación.
 
 ---
 
-## Phase 7: Integración SPA y Composición Final
+## Phase 7: Integración SPA y Composición Final ✅
 
 **Purpose**: Ensamblar todas las features en la SPA, implementar navegación por estado y aplicar el estilo editorial completo.
 
-- [ ] T030 Actualizar `src/store/expense-store.ts` — verificar que el slice de navegación (`isModalOpen`, `openModal`, `closeModal`) está correctamente separado del slice de datos; confirmar que no hay dependencia de react-router en ningún archivo
-- [ ] T031 Crear `src/app.tsx` — componer la SPA:
-  - Renderiza `budget-summary.tsx` + `expense-list.tsx` + `reset-button.tsx` como Dashboard siempre visible
-  - Renderiza `expense-form.tsx` condicionalmente según `isModalOpen` del store (navegación SPA sin router)
-  - Botón flotante "＋ Nuevo Gasto" con fondo `primary` y degradado; llama `openModal()`
-  - Aplica fondo `background` (#f9f9f7) al root
-- [ ] T032 Actualizar `src/main.tsx` — importar `src/index.css`; montar `<App />` en `#root`
-- [ ] T033 [P] Revisar todos los componentes presentacionales — confirmar que ningún `.tsx` llama directamente al store (solo recibe props); mover cualquier llamada al store al hook correspondiente
-- [ ] T034 [P] Auditoría No-Line Rule — verificar que ningún componente usa `rounded-*`, `border-*` o `ring-*` con valores distintos de 0; reemplazar por clases Tailwind de borde inferior si es necesario
-- [ ] T035 [P] Verificar tokens del Design System — confirmar que `background`, `surface-container-low` y `primary` se usan consistentemente en todos los componentes siguiendo el Tonal Layering del Design System "The Digital Ledger"
+- [x] T030 `src/store/expense-store.ts` — NavSlice (`isModalOpen`, `editingExpense`, `openModal`, `closeModal`, `openEditModal`) correctamente separado; sin react-router en ningún archivo ✓
+- [x] T031 Crear `src/App.tsx` — Dashboard (BudgetSummary/BudgetForm + ExpenseList + ResetButton) + NewExpenseModal + EditExpenseModal; navegación SPA por `isModalOpen`/`editingExpense`; botón "＋ Nuevo gasto"; `resetAll` conectado (T029 ✓)
+- [x] T032 Actualizar `src/main.tsx` — importa `./App.tsx`; monta `<App />` en `#root` ✓
+- [x] T033 [P] Auditoría presentacionales — solo `edit-expense-modal.tsx` accede al store (es contenedor SPA, correcto); todos los demás `.tsx` de features son puramente presentacionales ✓
+- [x] T034 [P] Auditoría No-Line Rule — ningún componente usa `rounded-*` con valor distinto de 0 ✓
+- [x] T035 [P] Tokens Design System — `bg-primary`, `bg-surface-container-low`, `bg-background`, `text-primary` usados como clases Tailwind directas en todos los componentes; sin `var(--color-*)` inline ✓
 
 **Checkpoint**: SPA completamente funcional; navegación por estado; estilo editorial aplicado.
 
