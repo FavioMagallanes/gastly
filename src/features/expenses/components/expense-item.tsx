@@ -1,10 +1,8 @@
 import { CATEGORY_LABELS } from '../../../types'
 import { Button } from '../../../shared/ui/button'
 import { Icon } from '../../../shared/ui/icon'
+import { formatCurrency } from '../../../core/math/format'
 import type { Expense } from '../../../types'
-
-const fmt = (value: number) =>
-  new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value)
 
 const CATEGORY_ICON: Record<string, { icon: string; bg: string; fg: string }> = {
   BBVA: {
@@ -63,7 +61,7 @@ export const ExpenseItem = ({ expense, onEdit, onDelete }: ExpenseItemProps) => 
       <div className="flex items-center gap-3 shrink-0">
         <div className="text-right">
           <p className="text-sm font-semibold text-ds-text dark:text-dark-text">
-            {fmt(expense.totalAmount)}
+            {formatCurrency(expense.totalAmount)}
           </p>
           {expense.installment && (
             <p className="text-[8px] text-ds-secondary dark:text-dark-secondary uppercase font-bold tracking-tighter">
@@ -72,7 +70,7 @@ export const ExpenseItem = ({ expense, onEdit, onDelete }: ExpenseItemProps) => 
           )}
         </div>
         {(onEdit || onDelete) && (
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
             {onEdit && (
               <Button
                 variant="ghost"

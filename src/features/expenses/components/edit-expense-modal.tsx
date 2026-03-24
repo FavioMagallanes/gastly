@@ -21,7 +21,8 @@ const EditExpenseModalContent = ({ onClose }: { onClose: () => void }) => {
 
   useEffect(() => {
     formValue.amountRef.current?.focus()
-  }, [formValue.amountRef])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <Modal title="Editar gasto" icon="pencil-edit" onClose={onClose}>

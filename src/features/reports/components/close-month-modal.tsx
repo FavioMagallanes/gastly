@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Modal } from '../../../shared/ui/modal'
 import { Button } from '../../../shared/ui/button'
+import { formatCurrency } from '../../../core/math/format'
 import { useExpenseStore } from '../../../store/expense-store'
 import type { ReportInsert } from '../services/report-service'
 
@@ -17,6 +19,9 @@ export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) =>
   const expenses = useExpenseStore(s => s.expenses)
   const getSummary = useExpenseStore(s => s.getSummary)
   const resetAll = useExpenseStore(s => s.resetAll)
+  const resetExpenses = useExpenseStore(s => s.resetExpenses)
+  const [submitting, setSubmitting] = useState(false)
+  const [keepBudget, setKeepBudget] = useState(true)
 
   const summary = getSummary()
 
@@ -28,6 +33,9 @@ export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) =>
   const label = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1)
 
   const handleConfirm = () => {
+    if (submitting) return
+    setSubmitting(true)
+
     const report: ReportInsert = {
       label,
       closed_at: new Date().toISOString(),
@@ -39,17 +47,14 @@ export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) =>
     }
 
     onConfirm(report, () => {
-      resetAll()
+      if (keepBudget) {
+        resetExpenses()
+      } else {
+        resetAll()
+      }
       onClose()
     })
   }
-
-  const formatCurrency = (n: number) =>
-    new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-      minimumFractionDigits: 2,
-    }).format(n)
 
   return (
     <Modal title="Cerrar mes" icon="check" onClose={onClose}>
@@ -88,8 +93,21 @@ export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) =>
           </div>
         </div>
 
+        {/* Opción para conservar presupuesto */}
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={keepBudget}
+            onChange={e => setKeepBudget(e.target.checked)}
+            className="size-4 rounded border-ds-border dark:border-dark-border accent-primary cursor-pointer"
+          />
+          <span className="text-[13px] text-ds-text dark:text-dark-text">
+            Mantener presupuesto para el próximo mes
+          </span>
+        </label>
+
         <div className="flex gap-3 pt-2">
-          <Button variant="secondary" size="md" fullWidth onClick={onClose}>
+          <Button variant="secondary" size="md" fullWidth onClick={onClose} disabled={submitting}>
             Cancelar
           </Button>
           <Button
@@ -97,9 +115,9 @@ export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) =>
             size="md"
             fullWidth
             onClick={handleConfirm}
-            disabled={!budget || expenses.length === 0}
+            disabled={!budget || expenses.length === 0 || submitting}
           >
-            Cerrar mes
+            {submitting ? 'Guardando...' : 'Cerrar mes'}
           </Button>
         </div>
 

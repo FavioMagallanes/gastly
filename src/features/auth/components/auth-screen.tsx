@@ -23,6 +23,12 @@ export const AuthScreen = () => {
       return
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email.trim())) {
+      toast.warning('Ingresá un email válido')
+      return
+    }
+
     if (password.length < 6) {
       toast.warning('La contraseña debe tener al menos 6 caracteres')
       return

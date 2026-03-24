@@ -1,20 +1,13 @@
 import { Modal } from '../../../shared/ui/modal'
 import { Icon } from '../../../shared/ui/icon'
+import { formatCurrency } from '../../../core/math/format'
 import { CATEGORY_LABELS } from '../../../types'
 import type { MonthlyReport } from '../../../types/database'
-import type { Category } from '../../../types'
 
 interface ReportDetailModalProps {
   report: MonthlyReport
   onClose: () => void
 }
-
-const formatCurrency = (n: number) =>
-  new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    minimumFractionDigits: 2,
-  }).format(n)
 
 /**
  * ReportDetailModal — Muestra el detalle de un reporte mensual cerrado.
@@ -66,10 +59,10 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
                   />
                   <div className="min-w-0">
                     <p className="text-ds-text dark:text-dark-text truncate">
-                      {expense.description || CATEGORY_LABELS[expense.category as Category]}
+                      {expense.description || CATEGORY_LABELS[expense.category]}
                     </p>
                     <p className="text-[11px] text-ds-secondary dark:text-dark-secondary">
-                      {CATEGORY_LABELS[expense.category as Category]}
+                      {CATEGORY_LABELS[expense.category]}
                       {expense.installment && ` · Cuota ${expense.installment}`}
                     </p>
                   </div>

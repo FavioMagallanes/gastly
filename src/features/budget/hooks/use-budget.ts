@@ -1,13 +1,23 @@
+import { useMemo } from 'react'
 import { toast } from 'sonner'
 import { useExpenseStore } from '../../../store/expense-store'
+import { calcTotalSpent, calcRemainingBalance } from '../../../core/math/finance'
 
 export const useBudget = () => {
   const budget = useExpenseStore(s => s.budget)
+  const expenses = useExpenseStore(s => s.expenses)
   const setBudget = useExpenseStore(s => s.setBudget)
-  const editBudget = useExpenseStore(s => s.editBudget)
-  const getSummary = useExpenseStore(s => s.getSummary)
 
-  const summary = getSummary()
+  const summary = useMemo(() => {
+    const totalSpent = calcTotalSpent(expenses)
+    const budgetAmount = budget?.amount ?? 0
+    const remainingBalance = calcRemainingBalance(budgetAmount, totalSpent)
+    return {
+      totalSpent,
+      remainingBalance,
+      isOverBudget: remainingBalance < 0,
+    }
+  }, [budget, expenses])
 
   const MAX_BUDGET = 5_000_000
 
@@ -25,17 +35,7 @@ export const useBudget = () => {
       return
     }
     setBudget(amount)
-    toast.success('Presupuesto establecido')
-  }
-
-  const handleEditBudget = (amount: number) => {
-    const err = validate(amount)
-    if (err) {
-      toast.warning(err)
-      return
-    }
-    editBudget(amount)
-    toast.success('Presupuesto actualizado')
+    toast.success(budget ? 'Presupuesto actualizado' : 'Presupuesto establecido')
   }
 
   return {
@@ -44,6 +44,5 @@ export const useBudget = () => {
     totalSpent: summary.totalSpent,
     isOverBudget: summary.isOverBudget,
     handleSetBudget,
-    handleEditBudget,
   }
 }

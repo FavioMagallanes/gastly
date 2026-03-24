@@ -5,10 +5,11 @@ import { Icon } from '../../../shared/ui/icon'
 interface BudgetFormProps {
   onSubmit: (amount: number) => void
   isEditing: boolean
+  initialValue?: number
 }
 
-export const BudgetForm = ({ onSubmit, isEditing }: BudgetFormProps) => {
-  const [value, setValue] = useState('')
+export const BudgetForm = ({ onSubmit, isEditing, initialValue }: BudgetFormProps) => {
+  const [value, setValue] = useState(initialValue ? String(initialValue) : '')
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()

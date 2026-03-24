@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useExpenseStore } from '../../../store/expense-store'
 import { useBudget, BudgetSummary, BudgetForm } from '../../budget'
 import { useExpenses, ExpenseList, ResetButton } from '../../expenses'
@@ -9,8 +9,7 @@ import { Icon } from '../../../shared/ui/icon'
 import { ThemeToggle } from '../../../shared/ui/theme-toggle'
 
 export const Dashboard = () => {
-  const { budget, remainingBalance, totalSpent, isOverBudget, handleSetBudget, handleEditBudget } =
-    useBudget()
+  const { budget, remainingBalance, totalSpent, isOverBudget, handleSetBudget } = useBudget()
   const { expenses, handleEdit, handleDelete } = useExpenses()
   const {
     reports,
@@ -27,6 +26,11 @@ export const Dashboard = () => {
   const [showCloseMonthModal, setShowCloseMonthModal] = useState(false)
   const [showReports, setShowReports] = useState(false)
 
+  const currentMonth = useMemo(
+    () => new Date().toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }),
+    [],
+  )
+
   return (
     <main className="min-h-screen bg-white dark:bg-dark-bg flex justify-center py-12 transition-colors">
       <div className="w-full max-w-4xl px-6 md:px-16">
@@ -39,7 +43,7 @@ export const Dashboard = () => {
               </h1>
               <div className="flex items-center gap-1.5 text-ds-secondary dark:text-dark-secondary text-[13px] tracking-normal">
                 <Icon name="calendar" size="sm" />
-                {new Date().toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })}
+                {currentMonth}
               </div>
             </div>
             <div className="flex items-center gap-1 mt-0.5 md:mt-2">
@@ -67,8 +71,9 @@ export const Dashboard = () => {
           <div className="mt-6">
             <BudgetForm
               key={budget ? 'editing' : 'new'}
-              onSubmit={budget ? handleEditBudget : handleSetBudget}
+              onSubmit={handleSetBudget}
               isEditing={!!budget}
+              initialValue={budget?.amount}
             />
           </div>
         </header>

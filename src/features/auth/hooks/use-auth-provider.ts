@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../../core/supabase/client'
+import { rehydrateStore } from '../../../store/expense-store'
 import type { User } from '@supabase/supabase-js'
 
 /**
@@ -13,7 +14,9 @@ export const useAuthProvider = () => {
   useEffect(() => {
     // Obtener sesión actual al montar
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      rehydrateStore(currentUser?.id)
       setLoading(false)
     })
 
@@ -21,7 +24,9 @@ export const useAuthProvider = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      rehydrateStore(currentUser?.id)
     })
 
     return () => subscription.unsubscribe()

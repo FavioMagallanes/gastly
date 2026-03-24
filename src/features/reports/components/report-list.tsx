@@ -1,5 +1,6 @@
 import { Icon } from '../../../shared/ui/icon'
 import { Button } from '../../../shared/ui/button'
+import { formatCurrency } from '../../../core/math/format'
 import type { MonthlyReport } from '../../../types/database'
 
 interface ReportListProps {
@@ -8,13 +9,6 @@ interface ReportListProps {
   onSelect: (report: MonthlyReport) => void
   onDelete: (id: string, label: string) => void
 }
-
-const formatCurrency = (n: number) =>
-  new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    minimumFractionDigits: 0,
-  }).format(n)
 
 /**
  * ReportList — Lista de reportes mensuales cerrados.
@@ -60,7 +54,7 @@ export const ReportList = ({ reports, loading, onSelect, onDelete }: ReportListP
                 {report.label}
               </p>
               <div className="flex items-center gap-3 mt-0.5 text-[11px] text-ds-secondary dark:text-dark-secondary">
-                <span>{formatCurrency(report.total_spent)} gastado</span>
+                <span>{formatCurrency(report.total_spent, 0)} gastado</span>
                 <span
                   className={
                     report.is_over_budget
@@ -70,7 +64,7 @@ export const ReportList = ({ reports, loading, onSelect, onDelete }: ReportListP
                 >
                   {report.is_over_budget
                     ? 'Excedido'
-                    : `${formatCurrency(report.remaining_balance)} restante`}
+                    : `${formatCurrency(report.remaining_balance, 0)} restante`}
                 </span>
               </div>
             </div>

@@ -30,14 +30,22 @@ export const closeMonth = async (report: ReportInsert): Promise<{ error: string 
 /**
  * Obtiene todos los reportes mensuales del usuario autenticado,
  * ordenados del más reciente al más antiguo.
+ * Se filtra por user_id como defensa en profundidad además de RLS.
  */
 export const fetchReports = async (): Promise<{
   data: MonthlyReport[]
   error: string | null
 }> => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) return { data: [], error: 'No hay sesión activa' }
+
   const { data, error } = await supabase
     .from('monthly_reports')
     .select('*')
+    .eq('user_id', user.id)
     .order('closed_at', { ascending: false })
 
   return {

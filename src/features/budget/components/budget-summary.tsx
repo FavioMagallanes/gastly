@@ -1,7 +1,6 @@
+import { useMemo } from 'react'
 import { Icon } from '../../../shared/ui/icon'
-
-const fmt = (value: number) =>
-  new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value)
+import { formatCurrency } from '../../../core/math/format'
 
 interface BudgetSummaryProps {
   budgetAmount: number
@@ -18,12 +17,16 @@ export const BudgetSummary = ({
 }: BudgetSummaryProps) => {
   const pct = budgetAmount > 0 ? Math.min((totalSpent / budgetAmount) * 100, 100) : 0
   const barColor = isOverBudget ? 'bg-red-500' : pct > 80 ? 'bg-orange-400' : 'bg-primary'
+  const currentPeriod = useMemo(
+    () => new Date().toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }),
+    [],
+  )
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
       <StatCard
         label="Gastado"
-        value={fmt(totalSpent)}
+        value={formatCurrency(totalSpent)}
         footer={
           <div className="mt-4">
             <div className="h-2 bg-ds-border dark:bg-dark-border rounded-full overflow-hidden">
@@ -37,7 +40,7 @@ export const BudgetSummary = ({
       />
       <StatCard
         label="Saldo restante"
-        value={fmt(remainingBalance)}
+        value={formatCurrency(remainingBalance)}
         valueClassName={isOverBudget ? 'text-red-500' : 'text-ds-text dark:text-dark-text'}
         footer={
           <p
@@ -50,10 +53,10 @@ export const BudgetSummary = ({
       />
       <StatCard
         label="Presupuesto"
-        value={fmt(budgetAmount)}
+        value={formatCurrency(budgetAmount)}
         footer={
           <p className="text-xs text-ds-secondary dark:text-dark-secondary mt-6">
-            Período: {new Date().toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })}
+            Período: {currentPeriod}
           </p>
         }
       />
