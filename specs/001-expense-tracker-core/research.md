@@ -131,6 +131,7 @@ En desktop, el soporte de archivos es limitado (Chrome parcial, Firefox no sopor
 por lo que se usa descarga directa como fallback transparente.
 
 **Detección de soporte**:
+
 ```typescript
 const canShareFiles = (file: File) =>
   typeof navigator.share === 'function' &&

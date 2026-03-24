@@ -189,12 +189,12 @@ T011 (types) → T012 (math) [P] + T013 (storage) [P] en paralelo
 
 ### MVP incremental sugerido
 
-| MVP       | Phases      | Entrega                                   |
-| --------- | ----------- | ----------------------------------------- |
-| **MVP-A** | 1 + 2 + 3   | Configurar presupuesto y ver saldo        |
-| **MVP-B** | + 4         | Registrar gastos y ver resumen            |
-| **MVP-C** | + 5 + 6 + 7 | CRUD completo, reset y SPA integrada      |
-| **Final** | + 8 + 9     | Polish, exportación PDF y validación      |
+| MVP       | Phases      | Entrega                              |
+| --------- | ----------- | ------------------------------------ |
+| **MVP-A** | 1 + 2 + 3   | Configurar presupuesto y ver saldo   |
+| **MVP-B** | + 4         | Registrar gastos y ver resumen       |
+| **MVP-C** | + 5 + 6 + 7 | CRUD completo, reset y SPA integrada |
+| **Final** | + 8 + 9     | Polish, exportación PDF y validación |
 
 ---
 
@@ -204,10 +204,10 @@ T011 (types) → T012 (math) [P] + T013 (storage) [P] en paralelo
 
 **Prerequisites**: Phase 7 completa (reportes funcionales con modal de detalle).
 
-- [ ] T044 Instalar dependencias: `pnpm add jspdf jspdf-autotable` + `pnpm add -D @types/jspdf`
-- [ ] T045 [P] [US6] Crear `src/features/reports/services/report-pdf.ts` — función `generateReportPdf(report: MonthlyReport): Promise<Blob>` que construye el PDF con jsPDF + autoTable: título (label), fecha de cierre, tabla resumen (presupuesto/gastado/saldo), tabla de gastos (descripción, categoría, cuota, monto)
-- [ ] T046 [P] [US6] Crear `src/features/reports/services/share-report.ts` — función `shareReport(blob: Blob, filename: string): Promise<void>` que usa `navigator.share({ files })` si está disponible, con fallback a `URL.createObjectURL` + descarga directa
-- [ ] T047 [US6] Agregar botones "Descargar PDF" y "Compartir" al `report-detail-modal.tsx` con estados de loading; conectar con `generateReportPdf` y `shareReport`
+- [x] T044 Instalar dependencias: `pnpm add jspdf jspdf-autotable`
+- [x] T045 [P] [US6] Crear `src/features/reports/services/report-pdf.ts` — función `generateReportPdf(report: MonthlyReport): Blob` que construye el PDF con jsPDF + autoTable: título (label), fecha de cierre, tabla resumen (presupuesto/gastado/saldo), tabla de gastos (descripción, categoría, cuota, monto)
+- [x] T046 [P] [US6] Crear `src/features/reports/services/share-report.ts` — funciones `downloadReport` y `shareReport` que usan `navigator.share({ files })` si está disponible, con fallback a `URL.createObjectURL` + descarga directa
+- [x] T047 [US6] Agregar botones "Descargar PDF" y "Compartir" al `report-detail-modal.tsx` con lazy import (code-splitting) y estados de loading; conectar con `generateReportPdf` y `shareReport`
 
 **Checkpoint**: US6 completa; el usuario puede descargar y compartir el PDF del reporte desde el modal de detalle.
 
@@ -242,6 +242,6 @@ T011 (types) → T012 (math) [P] + T013 (storage) [P] en paralelo
 | Phase 6 — US5 Reset                | 2 tareas               |
 | Phase 7 — Integración SPA          | 6 tareas               |
 | Phase 8 — Polish                   | 8 tareas               |
-| Phase 9 — PDF Export + Share        | 4 tareas               |
+| Phase 9 — PDF Export + Share       | 4 tareas               |
 | Tareas paralelizables [P]          | 24 tareas              |
 | MVP mínimo (MVP-A)                 | Phases 1–3 → 19 tareas |

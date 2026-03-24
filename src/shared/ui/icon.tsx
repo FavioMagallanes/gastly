@@ -22,6 +22,8 @@ import {
   Moon02Icon,
   Logout01Icon,
   Archive02Icon,
+  Download04Icon,
+  Share01Icon,
 } from '@hugeicons/core-free-icons'
 
 /* ─── Icon registry ──────────────────────────────────────────────────── */
@@ -51,6 +53,8 @@ const iconMap: Record<string, IconSvgElement> = {
   moon: Moon02Icon,
   logout: Logout01Icon,
   archive: Archive02Icon,
+  download: Download04Icon,
+  share: Share01Icon,
 }
 
 /* ─── Sizes ──────────────────────────────────────────────────────────── */

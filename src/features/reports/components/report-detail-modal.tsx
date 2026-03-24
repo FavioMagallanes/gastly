@@ -1,5 +1,8 @@
+import { useState } from 'react'
+import { toast } from 'sonner'
 import { Modal } from '../../../shared/ui/modal'
 import { Icon } from '../../../shared/ui/icon'
+import { Button } from '../../../shared/ui/button'
 import { formatCurrency } from '../../../core/math/format'
 import { CATEGORY_LABELS } from '../../../types'
 import type { MonthlyReport } from '../../../types/database'
@@ -13,6 +16,42 @@ interface ReportDetailModalProps {
  * ReportDetailModal — Muestra el detalle de un reporte mensual cerrado.
  */
 export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) => {
+  const [downloading, setDownloading] = useState(false)
+  const [sharing, setSharing] = useState(false)
+
+  const filename = `reporte-${report.label.toLowerCase().replace(/\s+/g, '-')}.pdf`
+
+  const handleDownload = async () => {
+    setDownloading(true)
+    try {
+      const { generateReportPdf } = await import('../services/report-pdf')
+      const { downloadReport } = await import('../services/share-report')
+      const blob = generateReportPdf(report)
+      downloadReport(blob, filename)
+      toast.success('PDF descargado')
+    } catch {
+      toast.error('Error al generar el PDF')
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  const handleShare = async () => {
+    setSharing(true)
+    try {
+      const { generateReportPdf } = await import('../services/report-pdf')
+      const { shareReport } = await import('../services/share-report')
+      const blob = generateReportPdf(report)
+      await shareReport(blob, filename)
+    } catch (err) {
+      // navigator.share throws AbortError if user cancels — don't show error
+      if (err instanceof Error && err.name === 'AbortError') return
+      toast.error('Error al compartir el reporte')
+    } finally {
+      setSharing(false)
+    }
+  }
+
   return (
     <Modal title={report.label} icon="receipt-dollar" onClose={onClose}>
       <div className="space-y-4">
@@ -73,6 +112,30 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Acciones PDF */}
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            fullWidth
+            leadingIcon="download"
+            onClick={handleDownload}
+            disabled={downloading}
+          >
+            {downloading ? 'Generando...' : 'Descargar PDF'}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            fullWidth
+            leadingIcon="share"
+            onClick={handleShare}
+            disabled={sharing}
+          >
+            {sharing ? 'Compartiendo...' : 'Compartir'}
+          </Button>
         </div>
 
         {/* Fecha de cierre */}
