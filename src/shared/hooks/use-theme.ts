@@ -16,8 +16,6 @@ const applyTheme = (theme: Theme) => {
   document.documentElement.classList.toggle('dark', theme === 'dark')
 }
 
-/* ─── Context ────────────────────────────────────────────────────────── */
-
 interface ThemeContextValue {
   theme: Theme
   isDark: boolean

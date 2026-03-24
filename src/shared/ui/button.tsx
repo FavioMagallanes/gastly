@@ -1,12 +1,8 @@
 import { forwardRef } from 'react'
 import { Icon } from './icon'
 
-/* ─── Variants ───────────────────────────────────────────────────────── */
-
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'link'
 type ButtonSize = 'sm' | 'md' | 'lg' | 'icon'
-
-/* ─── Style maps ─────────────────────────────────────────────────────── */
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-primary text-white hover:bg-primary-hover shadow-sm',
@@ -25,20 +21,13 @@ const sizeStyles: Record<ButtonSize, string> = {
   icon: 'size-8 p-0 justify-center',
 }
 
-/* ─── Props ──────────────────────────────────────────────────────────── */
-
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   size?: ButtonSize
-  /** Full-width button */
   fullWidth?: boolean
-  /** Hugeicon name placed before children */
   leadingIcon?: string
-  /** Hugeicon name placed after children */
   trailingIcon?: string
 }
-
-/* ─── Component ──────────────────────────────────────────────────────── */
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (

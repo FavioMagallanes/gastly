@@ -7,7 +7,6 @@ import { ThemeProvider } from './shared/ui/theme-provider'
 import { useTheme } from './shared/hooks/use-theme'
 import { Toaster } from 'sonner'
 
-/* ─── App content (dentro de AuthProvider + ThemeProvider) ───────────── */
 const AppContent = () => {
   const { user, loading } = useAuth()
   const isModalOpen = useExpenseStore(s => s.isModalOpen)
@@ -15,7 +14,6 @@ const AppContent = () => {
   const openModal = useExpenseStore(s => s.openModal)
   const { theme } = useTheme()
 
-  /* Loading spinner mientras se verifica la sesión */
   if (loading) {
     return (
       <div className="min-h-screen bg-white dark:bg-dark-bg flex items-center justify-center transition-colors">
@@ -24,7 +22,6 @@ const AppContent = () => {
     )
   }
 
-  /* Si no hay usuario autenticado → pantalla de login */
   if (!user) {
     return (
       <>
@@ -76,7 +73,6 @@ const AppContent = () => {
   )
 }
 
-/* ─── App root ───────────────────────────────────────────────────────── */
 const App = () => (
   <ThemeProvider>
     <AuthProvider>

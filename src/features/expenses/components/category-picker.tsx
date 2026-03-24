@@ -9,10 +9,6 @@ interface CategoryPickerProps {
 
 const CATEGORIES: Category[] = ['BBVA', 'SUPERVIELLE', 'PRESTAMO', 'OTROS']
 
-/**
- * CategoryPicker — Select dropdown alineado con Stitch design system.
- * Reemplaza el grid de chips por un <select> nativo con estilo consistente.
- */
 export const CategoryPicker = ({ value, onChange }: CategoryPickerProps) => {
   const isDefault = value === 'OTROS'
 

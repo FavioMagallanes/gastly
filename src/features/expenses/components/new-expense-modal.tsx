@@ -1,8 +1,8 @@
-import { useExpenseStore } from '../../../store/expense-store'
-import { useExpenseForm } from '../hooks/use-expense-form'
-import { ExpenseFormProvider } from '../context/expense-form-provider'
-import { ExpenseForm } from './expense-form'
 import { Modal } from '../../../shared/ui/modal'
+import { useExpenseStore } from '../../../store/expense-store'
+import { ExpenseFormProvider } from '../context/expense-form-provider'
+import { useExpenseForm } from '../hooks/use-expense-form'
+import { ExpenseForm } from './expense-form'
 
 export const NewExpenseModal = () => {
   const closeModal = useExpenseStore(s => s.closeModal)

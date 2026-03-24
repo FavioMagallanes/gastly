@@ -4,9 +4,6 @@ import { CategoryPicker } from './category-picker'
 import { Button } from '../../../shared/ui/button'
 import { Icon } from '../../../shared/ui/icon'
 
-/**
- * Field — Wrapper atómico para label + input + error.
- */
 const Field = ({
   label,
   error,
@@ -25,10 +22,6 @@ const Field = ({
   </div>
 )
 
-/**
- * StitchInput — Input alineado con el design system Stitch:
- * border sutil, fondo surface, ring al focus, border-radius lg.
- */
 const StitchInput = forwardRef<
   HTMLInputElement,
   React.InputHTMLAttributes<HTMLInputElement> & { error?: string; prefix?: string }
@@ -63,7 +56,6 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      {/* Monto — lo que se paga este mes */}
       <Field label="Monto" error={errors.totalAmount}>
         <StitchInput
           ref={amountRef}
@@ -79,7 +71,6 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         />
       </Field>
 
-      {/* Descripción */}
       <Field label="Descripción">
         <StitchInput
           type="text"
@@ -89,7 +80,6 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         />
       </Field>
 
-      {/* Categoría + Cuotas en fila */}
       <div className="flex gap-3">
         <div className={showInstallments ? 'flex-1' : 'w-full'}>
           <CategoryPicker value={fields.category} onChange={v => setField('category', v)} />
@@ -109,7 +99,6 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         )}
       </div>
 
-      {/* Pro-tip */}
       {showInstallments && (
         <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg px-3 py-2.5">
           <Icon name="info" size="base" className="text-primary mt-0.5" />
@@ -120,7 +109,6 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         </div>
       )}
 
-      {/* Acciones */}
       <div className="flex items-center justify-end gap-3 pt-2">
         {onCancel && (
           <Button variant="ghost" size="md" onClick={onCancel}>
