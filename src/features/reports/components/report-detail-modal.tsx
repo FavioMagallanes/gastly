@@ -116,7 +116,9 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
               onClick={toggleAll}
               className="text-[11px] text-primary hover:underline underline-offset-2 cursor-pointer"
             >
-              {selectedIds.size === report.expenses.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
+              {selectedIds.size === report.expenses.length
+                ? 'Deseleccionar todo'
+                : 'Seleccionar todo'}
             </button>
           </div>
           <div className="max-h-64 overflow-y-auto space-y-1.5">

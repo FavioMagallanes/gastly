@@ -86,10 +86,7 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         </div>
         {showInstallments && (
           <div className="flex-1">
-            <Field
-              label="Cuotas"
-              error={errors.currentInstallment || errors.totalInstallments}
-            >
+            <Field label="Cuotas" error={errors.currentInstallment || errors.totalInstallments}>
               <div className="flex items-center gap-2">
                 <StitchInput
                   type="number"
@@ -120,8 +117,8 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg px-3 py-2.5">
           <Icon name="info" size="base" className="text-primary mt-0.5" />
           <p className="text-xs text-ds-secondary dark:text-dark-secondary leading-relaxed">
-            <span className="font-semibold text-ds-text dark:text-dark-text">Pro tip:</span>{' '}
-            Indicá la cuota actual y el total (ej: 1 de 6).
+            <span className="font-semibold text-ds-text dark:text-dark-text">Pro tip:</span> Indicá
+            la cuota actual y el total (ej: 1 de 6).
           </p>
         </div>
       )}
