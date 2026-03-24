@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { useExpenseStore } from '../../store/expense-store'
 import { isCardCategory } from '../../types'
 import type { Category } from '../../types'
@@ -63,6 +64,7 @@ export const useExpenseForm = (onSuccess?: () => void) => {
 
     setFields(INITIAL_STATE)
     setErrors({})
+    toast.success('Gasto registrado correctamente')
     onSuccess?.()
   }
 

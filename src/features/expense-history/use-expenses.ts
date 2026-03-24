@@ -1,3 +1,4 @@
+import { toast } from 'sonner'
 import { useExpenseStore } from '../../store/expense-store'
 import type { Expense } from '../../types'
 
@@ -9,7 +10,10 @@ export const useExpenses = () => {
 
   const handleEdit = (expense: Expense) => openEditModal(expense)
 
-  const handleDelete = (id: string) => deleteExpense(id)
+  const handleDelete = (id: string) => {
+    deleteExpense(id)
+    toast.success('Gasto eliminado')
+  }
 
   const handleUpdate = (id: string, changes: Partial<Omit<Expense, 'id' | 'registeredAt'>>) =>
     updateExpense(id, changes)

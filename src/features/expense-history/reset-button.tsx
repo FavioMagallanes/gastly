@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '../../shared/ui/button'
 import { Icon } from '../../shared/ui/icon'
 
@@ -23,6 +24,7 @@ export const ResetButton = ({ onConfirm }: ResetButtonProps) => {
             onClick={() => {
               setIsPending(false)
               onConfirm()
+              toast.success('Todos los datos fueron eliminados')
             }}
           >
             Sí, borrar todo

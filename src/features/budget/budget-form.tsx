@@ -5,10 +5,9 @@ import { Icon } from '../../shared/ui/icon'
 interface BudgetFormProps {
   onSubmit: (amount: number) => void
   isEditing: boolean
-  error?: string | null
 }
 
-export const BudgetForm = ({ onSubmit, isEditing, error }: BudgetFormProps) => {
+export const BudgetForm = ({ onSubmit, isEditing }: BudgetFormProps) => {
   const [value, setValue] = useState('')
 
   const handleSubmit = (e: FormEvent) => {
@@ -23,9 +22,7 @@ export const BudgetForm = ({ onSubmit, isEditing, error }: BudgetFormProps) => {
         <label className="text-[11px] font-semibold text-ds-secondary uppercase tracking-widest px-0.5">
           Establecer objetivo
         </label>
-        <div
-          className={`flex items-center border rounded-lg bg-surface px-3 py-2 gap-2 transition-all focus-within:ring-1 focus-within:ring-primary/50 ${error ? 'border-red-400' : 'border-ds-border'}`}
-        >
+        <div className="flex items-center border border-ds-border rounded-lg bg-surface px-3 py-2 gap-2 transition-all focus-within:ring-1 focus-within:ring-primary/50">
           <span className="text-ds-secondary text-sm">$</span>
           <input
             type="number"
@@ -38,7 +35,6 @@ export const BudgetForm = ({ onSubmit, isEditing, error }: BudgetFormProps) => {
           />
           <Icon name="pencil" size="base" className="text-ds-secondary" />
         </div>
-        {error && <p className="text-xs text-red-500 px-0.5">{error}</p>}
       </div>
       <Button type="submit" variant="primary" size="md">
         {isEditing ? 'Actualizar' : 'Guardar'}

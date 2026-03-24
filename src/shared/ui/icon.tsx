@@ -83,8 +83,16 @@ export const Icon = ({ name, size = 'xl', strokeWidth = 1.5, className = '' }: I
   if (!iconDef) return null
 
   return (
-    <span className={`inline-flex items-center justify-center shrink-0 leading-none ${className}`} aria-hidden="true">
-      <HugeiconsIcon icon={iconDef} size={sizeMap[size]} color="currentColor" strokeWidth={strokeWidth} />
+    <span
+      className={`inline-flex items-center justify-center shrink-0 leading-none ${className}`}
+      aria-hidden="true"
+    >
+      <HugeiconsIcon
+        icon={iconDef}
+        size={sizeMap[size]}
+        color="currentColor"
+        strokeWidth={strokeWidth}
+      />
     </span>
   )
 }

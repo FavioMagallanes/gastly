@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { useExpenseStore } from '../../store/expense-store'
 import { isCardCategory } from '../../types'
 import type { Expense, Category } from '../../types'
@@ -54,6 +55,7 @@ export const useEditExpenseForm = (expense: Expense, onSuccess?: () => void) => 
       installment: showInstallments ? fields.installment.trim() : undefined,
     })
 
+    toast.success('Gasto actualizado')
     onSuccess?.()
   }
 

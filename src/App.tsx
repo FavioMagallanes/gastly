@@ -10,6 +10,7 @@ import { EditExpenseModal } from './features/expense-history/edit-expense-modal'
 import { ResetButton } from './features/expense-history/reset-button'
 import { Button } from './shared/ui/button'
 import { Icon } from './shared/ui/icon'
+import { Toaster } from 'sonner'
 
 /* ─── Modal: nuevo gasto ─────────────────────────────────────────────── */
 const NewExpenseModal = () => {
@@ -64,15 +65,8 @@ const NewExpenseModal = () => {
 
 /* ─── Dashboard principal ────────────────────────────────────────────── */
 const Dashboard = () => {
-  const {
-    budget,
-    remainingBalance,
-    totalSpent,
-    isOverBudget,
-    error,
-    handleSetBudget,
-    handleEditBudget,
-  } = useBudget()
+  const { budget, remainingBalance, totalSpent, isOverBudget, handleSetBudget, handleEditBudget } =
+    useBudget()
   const { expenses, handleEdit, handleDelete } = useExpenses()
   const openModal = useExpenseStore(s => s.openModal)
   const resetAll = useExpenseStore(s => s.resetAll)
@@ -97,7 +91,6 @@ const Dashboard = () => {
             <BudgetForm
               onSubmit={budget ? handleEditBudget : handleSetBudget}
               isEditing={!!budget}
-              error={error}
             />
           </div>
         </header>
@@ -170,6 +163,17 @@ const App = () => {
 
       {isModalOpen && !editingExpense && <NewExpenseModal />}
       <EditExpenseModal />
+
+      <Toaster
+        position="bottom-center"
+        richColors
+        toastOptions={{
+          style: {
+            fontFamily: "'Inter', system-ui, sans-serif",
+            fontSize: '13px',
+          },
+        }}
+      />
     </div>
   )
 }
