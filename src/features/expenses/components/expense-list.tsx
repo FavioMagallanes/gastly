@@ -24,7 +24,7 @@ export const ExpenseList = ({ expenses, onEdit, onDelete, onAddFirst }: ExpenseL
         </p>
         {onAddFirst && (
           <Button variant="link" size="sm" onClick={onAddFirst}>
-            Registrá
+            Cargar
           </Button>
         )}
       </div>

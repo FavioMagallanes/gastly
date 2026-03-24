@@ -27,7 +27,7 @@ const AppContent = () => {
       <>
         <AuthScreen />
         <Toaster
-          position="bottom-center"
+          position="bottom-right"
           richColors
           theme={theme}
           toastOptions={{
@@ -59,7 +59,7 @@ const AppContent = () => {
       <EditExpenseModal />
 
       <Toaster
-        position="bottom-center"
+        position="bottom-right"
         richColors
         theme={theme}
         toastOptions={{
