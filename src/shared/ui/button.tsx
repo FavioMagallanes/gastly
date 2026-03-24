@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
 import { Icon } from './icon'
+import { Spinner } from './spinner'
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'link'
 type ButtonSize = 'sm' | 'md' | 'lg' | 'icon'
@@ -25,6 +26,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   size?: ButtonSize
   fullWidth?: boolean
+  /** Show a spinner and disable the button */
+  loading?: boolean
   leadingIcon?: string
   trailingIcon?: string
 }
@@ -35,10 +38,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = 'primary',
       size = 'md',
       fullWidth = false,
+      loading = false,
       leadingIcon,
       trailingIcon,
       className = '',
       children,
+      disabled,
       ...props
     },
     ref,
@@ -50,9 +55,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={`${base} ${variantStyles[variant]} ${sizeStyles[size]} ${fullWidth ? 'w-full' : ''} ${className}`}
+        disabled={disabled || loading}
         {...props}
       >
-        {leadingIcon && <Icon name={leadingIcon} size="base" />}
+        {loading ? <Spinner /> : leadingIcon && <Icon name={leadingIcon} size="base" />}
         {children}
         {trailingIcon && <Icon name={trailingIcon} size="base" />}
       </button>

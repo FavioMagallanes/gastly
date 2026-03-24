@@ -175,7 +175,8 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
             fullWidth
             leadingIcon="download"
             onClick={handleDownload}
-            disabled={downloading || selectedIds.size === 0}
+            loading={downloading}
+            disabled={selectedIds.size === 0}
           >
             {downloading ? 'Generando...' : 'Descargar PDF'}
           </Button>
@@ -185,7 +186,8 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
             fullWidth
             leadingIcon="share"
             onClick={handleShare}
-            disabled={sharing || selectedIds.size === 0}
+            loading={sharing}
+            disabled={selectedIds.size === 0}
           >
             {sharing ? 'Compartiendo...' : 'Compartir'}
           </Button>

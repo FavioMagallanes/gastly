@@ -5,6 +5,7 @@ import { AuthProvider, AuthScreen, useAuth } from './features/auth'
 import { Button } from './shared/ui/button'
 import { ThemeProvider } from './shared/ui/theme-provider'
 import { useTheme } from './shared/hooks/use-theme'
+import { Spinner } from './shared/ui/spinner'
 import { Toaster } from 'sonner'
 
 const AppContent = () => {
@@ -17,7 +18,7 @@ const AppContent = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white dark:bg-dark-bg flex items-center justify-center transition-colors">
-        <div className="text-ds-secondary dark:text-dark-secondary text-[13px]">Cargando...</div>
+        <Spinner className="text-ds-secondary dark:text-dark-secondary" />
       </div>
     )
   }

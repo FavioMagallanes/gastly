@@ -115,9 +115,10 @@ export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) =>
             size="md"
             fullWidth
             onClick={handleConfirm}
-            disabled={!budget || expenses.length === 0 || submitting}
+            loading={submitting}
+            disabled={!budget || expenses.length === 0}
           >
-            {submitting ? 'Guardando...' : 'Cerrar mes'}
+            {submitting ? 'Cerrando...' : 'Cerrar mes'}
           </Button>
         </div>
 

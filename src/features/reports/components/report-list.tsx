@@ -1,5 +1,6 @@
 import { Icon } from '../../../shared/ui/icon'
 import { Button } from '../../../shared/ui/button'
+import { Spinner } from '../../../shared/ui/spinner'
 import { formatCurrency } from '../../../core/math/format'
 import type { MonthlyReport } from '../../../types/database'
 
@@ -16,8 +17,8 @@ interface ReportListProps {
 export const ReportList = ({ reports, loading, onSelect, onDelete }: ReportListProps) => {
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-ds-secondary dark:text-dark-secondary text-[13px]">
-        Cargando reportes...
+      <div className="flex items-center justify-center py-8">
+        <Spinner className="text-ds-secondary dark:text-dark-secondary" />
       </div>
     )
   }
