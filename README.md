@@ -1,73 +1,160 @@
-# React + TypeScript + Vite
+# Gastly
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Monthly expense tracker built with React, TypeScript, and Supabase. Manage a personal budget, log expenses by category, close monthly periods, and export reports to PDF.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Authentication** — Email/password login and signup via Supabase Auth.
+- **Monthly budget** — Set an initial amount and track spending, balance, and usage in real time.
+- **Expense CRUD** — Create, edit, and delete entries with confirmation dialogs.
+- **Categories** — BBVA, Supervielle, Préstamo, Servicios, Colegio, Otros — each with its own icon and color.
+- **Installments** — Record payments in installments (e.g. 3/12) with dedicated numeric inputs.
+- **Month close** — Snapshot the current period to Supabase and reset local data for the next cycle.
+- **PDF export** — Generate a report with selected expenses, entirely client-side.
+- **Share** — Send the PDF via WhatsApp or other apps using the Web Share API (mobile).
+- **Dark mode** — Light and dark themes with localStorage persistence.
+- **Accessibility** — Focus trap in modals, keyboard navigation, ARIA roles.
+- **Code-splitting** — The jsPDF chunk (~430 KB) is loaded on demand only when generating a report.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **UI** — [React 19](https://react.dev) + [TypeScript 5.9](https://www.typescriptlang.org)
+- **Build** — [Vite 8](https://vite.dev)
+- **Styles** — [TailwindCSS 4](https://tailwindcss.com)
+- **State** — [Zustand 5](https://zustand.docs.pmnd.rs) with persist middleware
+- **Auth & DB** — [Supabase](https://supabase.com) (Auth + PostgreSQL with RLS)
+- **PDF** — [jsPDF](https://github.com/parallax/jsPDF) + [jspdf-autotable](https://github.com/simonbengtsson/jsPDF-AutoTable)
+- **Toasts** — [Sonner](https://sonner.emilkowal.ski)
+- **Icons** — [Hugeicons](https://hugeicons.com)
+- **Math** — [big.js](https://github.com/MikeMcl/big.js) for financial precision
+- **Linting** — ESLint 9 + Prettier
 
-## Expanding the ESLint configuration
+## Architecture
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The project follows a **feature-based architecture** with clear separation of concerns:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+├── core/               # Shared core logic
+│   ├── math/           # Financial calculations and formatting
+│   ├── storage/        # Persistence configuration
+│   └── supabase/       # Supabase client
+├── features/           # Business modules (barrel exports)
+│   ├── auth/           # Authentication
+│   ├── budget/         # Budget management
+│   ├── dashboard/      # Main view
+│   ├── expenses/       # Expense CRUD
+│   └── reports/        # Month close, PDF, sharing
+├── shared/             # Shared components and hooks
+│   ├── hooks/          # useTheme, etc.
+│   └── ui/             # Button, Modal, Icon, Spinner, etc.
+├── store/              # Global Zustand store
+└── types/              # Types and interfaces
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Each feature exposes a **barrel export** (`index.ts`) as its public API. Internal components, hooks, and services remain encapsulated.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Methodology: Spec-Driven Development
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Development followed a **spec-driven development** approach using [Spec Kit](https://github.com/github/spec-kit) — a library that structures the process from research through implementation with formal specifications.
+
 ```
+specs/001-expense-tracker-core/
+├── spec.md             # Functional specification (user stories, acceptance criteria)
+├── research.md         # Technical research (jsPDF, Web Share API, Zustand, etc.)
+├── plan.md             # Implementation plan by phase
+├── tasks.md            # Granular tasks with checklist
+├── data-model.md       # Data model (types, store, DB)
+├── quickstart.md       # Quick setup guide
+├── contracts/
+│   └── store.md        # Store contract (public interface)
+└── checklists/
+    └── requirements.md # Spec quality checklist
+```
+
+This ensures every feature is designed before coding, with full traceability from requirements to tasks to code.
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org) >= 18
+- [pnpm](https://pnpm.io) >= 9
+- A [Supabase](https://supabase.com) account (free tier)
+
+### Setup
+
+```bash
+git clone https://github.com/FavioMagallanes/gastly.git
+cd gastly
+pnpm install
+```
+
+Create a `.env` file from the example and fill in your Supabase credentials:
+
+```bash
+cp .env.example .env
+```
+
+```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+Run the contents of `supabase/schema.sql` in the Supabase SQL Editor to create the required tables, then start the dev server:
+
+```bash
+pnpm dev
+```
+
+### Available Scripts
+
+| Script              | Description                              |
+| ------------------- | ---------------------------------------- |
+| `pnpm dev`          | Development server with HMR              |
+| `pnpm build`        | Type-check + production build            |
+| `pnpm lint`         | Run ESLint                               |
+| `pnpm format`       | Format code with Prettier                |
+| `pnpm format:check` | Check formatting without modifying files |
+| `pnpm preview`      | Preview the production build             |
+
+## Production Build
+
+```bash
+pnpm build
+```
+
+| Chunk                   | Size    | Gzip    | Loading |
+| ----------------------- | ------- | ------- | ------- |
+| `index.js` (app)        | ~480 KB | ~139 KB | Eager   |
+| `report-pdf.js` (jsPDF) | ~430 KB | ~139 KB | Lazy    |
+| `index.css`             | ~35 KB  | ~7 KB   | Eager   |
+
+The PDF chunk is only downloaded when the user generates a report, keeping the main bundle lightweight.
+
+## Database
+
+The app uses Supabase with a `monthly_reports` table protected by **Row Level Security (RLS)**:
+
+```sql
+CREATE POLICY "Users can manage own reports"
+  ON monthly_reports
+  FOR ALL
+  USING (auth.uid() = user_id);
+```
+
+See [`supabase/schema.sql`](./supabase/schema.sql) for the full schema.
+
+Current-month expenses are persisted in **localStorage** (per-user key) via Zustand persist. They are saved to Supabase as an immutable snapshot only when the month is closed.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit using [conventional commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`)
+4. Push to your branch (`git push origin feature/my-feature`)
+5. Open a Pull Request
+
+## License
+
+MIT © [Favio Magallanes](https://github.com/FavioMagallanes)
