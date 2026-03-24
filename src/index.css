@@ -2,6 +2,9 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
+/* Dark mode activado por clase .dark en <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Design System — The Digital Ledger (aligned with Stitch) */
   --color-background: #ffffff;
@@ -14,6 +17,14 @@
   --color-ds-secondary: #73726e;
   --color-danger: #dc2626;
   --color-danger-hover: #b91c1c;
+
+  /* Dark mode semantic tokens */
+  --color-dark-bg: #191919;
+  --color-dark-surface: #252525;
+  --color-dark-border: #333333;
+  --color-dark-text: #ebebeb;
+  --color-dark-secondary: #9b9b9b;
+  --color-dark-hover: #2f2f2f;
 
   /* Border radius — aligned with Stitch */
   --radius-DEFAULT: 0.25rem;
@@ -47,6 +58,12 @@ body {
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
+}
+
+.dark body,
+body.dark {
+  background-color: var(--color-dark-bg);
+  color: var(--color-dark-text);
 }
 
 #root {

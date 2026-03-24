@@ -18,6 +18,8 @@ import {
   UnfoldMoreIcon,
   Tick02Icon,
   CleanIcon,
+  Sun02Icon,
+  Moon02Icon,
 } from '@hugeicons/core-free-icons'
 
 /* ─── Icon registry ──────────────────────────────────────────────────── */
@@ -43,6 +45,8 @@ const iconMap: Record<string, IconSvgElement> = {
   unfold: UnfoldMoreIcon,
   check: Tick02Icon,
   clean: CleanIcon,
+  sun: Sun02Icon,
+  moon: Moon02Icon,
 }
 
 /* ─── Sizes ──────────────────────────────────────────────────────────── */

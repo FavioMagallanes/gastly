@@ -2,16 +2,19 @@ import { useExpenseStore } from './store/expense-store'
 import { Dashboard } from './features/dashboard'
 import { NewExpenseModal, EditExpenseModal } from './features/expenses'
 import { Button } from './shared/ui/button'
+import { ThemeProvider } from './shared/ui/theme-provider'
+import { useTheme } from './shared/hooks/use-theme'
 import { Toaster } from 'sonner'
 
-/* ─── App root ───────────────────────────────────────────────────────── */
-const App = () => {
+/* ─── App content (dentro de ThemeProvider) ──────────────────────────── */
+const AppContent = () => {
   const isModalOpen = useExpenseStore(s => s.isModalOpen)
   const editingExpense = useExpenseStore(s => s.editingExpense)
   const openModal = useExpenseStore(s => s.openModal)
+  const { theme } = useTheme()
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-dark-bg transition-colors">
       <Dashboard />
 
       {/* FAB — solo visible en mobile, en desktop el botón está inline */}
@@ -30,6 +33,7 @@ const App = () => {
       <Toaster
         position="bottom-center"
         richColors
+        theme={theme}
         toastOptions={{
           style: {
             fontFamily: "'Inter', system-ui, sans-serif",
@@ -40,5 +44,12 @@ const App = () => {
     </div>
   )
 }
+
+/* ─── App root ───────────────────────────────────────────────────────── */
+const App = () => (
+  <ThemeProvider>
+    <AppContent />
+  </ThemeProvider>
+)
 
 export default App

@@ -10,8 +10,10 @@ type ButtonSize = 'sm' | 'md' | 'lg' | 'icon'
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-primary text-white hover:bg-primary-hover shadow-sm',
-  secondary: 'bg-transparent border border-ds-border text-ds-text hover:bg-surface',
-  ghost: 'bg-transparent text-ds-secondary hover:bg-surface hover:text-ds-text',
+  secondary:
+    'bg-transparent border border-ds-border dark:border-dark-border text-ds-text dark:text-dark-text hover:bg-surface dark:hover:bg-dark-hover',
+  ghost:
+    'bg-transparent text-ds-secondary dark:text-dark-secondary hover:bg-surface dark:hover:bg-dark-hover hover:text-ds-text dark:hover:text-dark-text',
   danger: 'bg-danger text-white hover:bg-danger-hover shadow-sm',
   link: 'bg-transparent text-primary hover:underline underline-offset-2 px-0! py-0! rounded-none! h-auto!',
 }

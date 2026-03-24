@@ -7,10 +7,26 @@ const fmt = (value: number) =>
   new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value)
 
 const CATEGORY_ICON: Record<string, { icon: string; bg: string; fg: string }> = {
-  BBVA: { icon: 'credit-card', bg: 'bg-blue-100', fg: 'text-blue-600' },
-  SUPERVIELLE: { icon: 'credit-card', bg: 'bg-violet-100', fg: 'text-violet-600' },
-  PRESTAMO: { icon: 'money', bg: 'bg-orange-100', fg: 'text-orange-600' },
-  OTROS: { icon: 'payment', bg: 'bg-green-100', fg: 'text-green-600' },
+  BBVA: {
+    icon: 'credit-card',
+    bg: 'bg-blue-100 dark:bg-blue-900/30',
+    fg: 'text-blue-600 dark:text-blue-400',
+  },
+  SUPERVIELLE: {
+    icon: 'credit-card',
+    bg: 'bg-violet-100 dark:bg-violet-900/30',
+    fg: 'text-violet-600 dark:text-violet-400',
+  },
+  PRESTAMO: {
+    icon: 'money',
+    bg: 'bg-orange-100 dark:bg-orange-900/30',
+    fg: 'text-orange-600 dark:text-orange-400',
+  },
+  OTROS: {
+    icon: 'payment',
+    bg: 'bg-green-100 dark:bg-green-900/30',
+    fg: 'text-green-600 dark:text-green-400',
+  },
 }
 
 interface ExpenseItemProps {
@@ -23,16 +39,16 @@ export const ExpenseItem = ({ expense, onEdit, onDelete }: ExpenseItemProps) => 
   const { icon, bg, fg } = CATEGORY_ICON[expense.category] ?? CATEGORY_ICON.OTROS
 
   return (
-    <div className="flex items-center justify-between p-3 border border-ds-border rounded-lg hover:bg-[#EFEFEF] transition-colors group cursor-pointer">
+    <div className="flex items-center justify-between p-3 border border-ds-border dark:border-dark-border rounded-lg hover:bg-[#EFEFEF] dark:hover:bg-dark-hover transition-colors group cursor-pointer">
       <div className="flex items-center gap-4">
         <div className={`size-10 ${bg} ${fg} rounded-lg flex items-center justify-center shrink-0`}>
           <Icon name={icon} size="xl" />
         </div>
         <div>
-          <p className="text-sm font-medium text-ds-text tracking-tight">
+          <p className="text-sm font-medium text-ds-text dark:text-dark-text tracking-tight">
             {expense.description ?? CATEGORY_LABELS[expense.category]}
           </p>
-          <p className="text-[12px] text-ds-secondary leading-relaxed">
+          <p className="text-[12px] text-ds-secondary dark:text-dark-secondary leading-relaxed">
             {CATEGORY_LABELS[expense.category]}
             {expense.installment ? ` • Cuota ${expense.installment}` : ''}
             {' • '}
@@ -46,9 +62,11 @@ export const ExpenseItem = ({ expense, onEdit, onDelete }: ExpenseItemProps) => 
 
       <div className="flex items-center gap-3 shrink-0">
         <div className="text-right">
-          <p className="text-sm font-semibold text-ds-text">{fmt(expense.totalAmount)}</p>
+          <p className="text-sm font-semibold text-ds-text dark:text-dark-text">
+            {fmt(expense.totalAmount)}
+          </p>
           {expense.installment && (
-            <p className="text-[8px] text-ds-secondary uppercase font-bold tracking-tighter">
+            <p className="text-[8px] text-ds-secondary dark:text-dark-secondary uppercase font-bold tracking-tighter">
               Monto
             </p>
           )}

@@ -17,7 +17,7 @@ const Field = ({
   children: React.ReactNode
 }) => (
   <div className="flex flex-col gap-1">
-    <label className="text-[11px] font-semibold text-ds-secondary uppercase tracking-widest">
+    <label className="text-[11px] font-semibold text-ds-secondary dark:text-dark-secondary uppercase tracking-widest">
       {label}
     </label>
     {children}
@@ -34,13 +34,15 @@ const StitchInput = forwardRef<
   React.InputHTMLAttributes<HTMLInputElement> & { error?: string; prefix?: string }
 >(({ error, prefix, ...props }, ref) => (
   <div
-    className={`flex items-center border rounded-lg bg-surface px-3 py-2.5 transition-all focus-within:ring-1 focus-within:ring-primary/50 ${error ? 'border-red-400' : 'border-ds-border'}`}
+    className={`flex items-center border rounded-lg bg-surface dark:bg-dark-surface px-3 py-2.5 transition-all focus-within:ring-1 focus-within:ring-primary/50 ${error ? 'border-red-400' : 'border-ds-border dark:border-dark-border'}`}
   >
-    {prefix && <span className="text-ds-secondary mr-2 text-sm">{prefix}</span>}
+    {prefix && (
+      <span className="text-ds-secondary dark:text-dark-secondary mr-2 text-sm">{prefix}</span>
+    )}
     <input
       ref={ref}
       {...props}
-      className="w-full bg-transparent border-none p-0 outline-none text-ds-text font-medium text-sm placeholder:text-ds-secondary/60 placeholder:font-normal"
+      className="w-full bg-transparent border-none p-0 outline-none text-ds-text dark:text-dark-text font-medium text-sm placeholder:text-ds-secondary/60 dark:placeholder:text-dark-secondary/60 placeholder:font-normal"
     />
   </div>
 ))
@@ -109,11 +111,11 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
 
       {/* Pro-tip */}
       {showInstallments && (
-        <div className="flex items-start gap-2 bg-blue-50 rounded-lg px-3 py-2.5">
+        <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg px-3 py-2.5">
           <Icon name="info" size="base" className="text-primary mt-0.5" />
-          <p className="text-xs text-ds-secondary leading-relaxed">
-            <span className="font-semibold text-ds-text">Pro tip:</span> Escribí "1/6" en cuotas
-            para indicar que pagás la cuota 1 de 6 este mes.
+          <p className="text-xs text-ds-secondary dark:text-dark-secondary leading-relaxed">
+            <span className="font-semibold text-ds-text dark:text-dark-text">Pro tip:</span> Escribí
+            "1/6" en cuotas para indicar que pagás la cuota 1 de 6 este mes.
           </p>
         </div>
       )}

@@ -26,17 +26,19 @@ export const BudgetSummary = ({
         value={fmt(totalSpent)}
         footer={
           <div className="mt-4">
-            <div className="h-2 bg-ds-border rounded-full overflow-hidden">
+            <div className="h-2 bg-ds-border dark:bg-dark-border rounded-full overflow-hidden">
               <div className={`h-full ${barColor} transition-all`} style={{ width: `${pct}%` }} />
             </div>
-            <p className="text-xs text-ds-secondary mt-2">{pct.toFixed(0)}% del presupuesto</p>
+            <p className="text-xs text-ds-secondary dark:text-dark-secondary mt-2">
+              {pct.toFixed(0)}% del presupuesto
+            </p>
           </div>
         }
       />
       <StatCard
         label="Saldo restante"
         value={fmt(remainingBalance)}
-        valueClassName={isOverBudget ? 'text-red-500' : 'text-ds-text'}
+        valueClassName={isOverBudget ? 'text-red-500' : 'text-ds-text dark:text-dark-text'}
         footer={
           <p
             className={`text-xs mt-6 font-medium flex items-center gap-1 ${isOverBudget ? 'text-red-500' : 'text-green-600'}`}
@@ -50,7 +52,7 @@ export const BudgetSummary = ({
         label="Presupuesto mensual"
         value={fmt(budgetAmount)}
         footer={
-          <p className="text-xs text-ds-secondary mt-6">
+          <p className="text-xs text-ds-secondary dark:text-dark-secondary mt-6">
             Período: {new Date().toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })}
           </p>
         }
@@ -62,7 +64,7 @@ export const BudgetSummary = ({
 const StatCard = ({
   label,
   value,
-  valueClassName = 'text-ds-text',
+  valueClassName = 'text-ds-text dark:text-dark-text',
   footer,
 }: {
   label: string
@@ -70,8 +72,8 @@ const StatCard = ({
   valueClassName?: string
   footer?: React.ReactNode
 }) => (
-  <div className="border border-ds-border rounded-xl bg-background p-5 hover:bg-[#EFEFEF] transition-colors">
-    <p className="text-[11px] font-semibold text-ds-secondary uppercase tracking-widest mb-2">
+  <div className="border border-ds-border dark:border-dark-border rounded-xl bg-background dark:bg-dark-surface p-5 hover:bg-[#EFEFEF] dark:hover:bg-dark-hover transition-colors">
+    <p className="text-[11px] font-semibold text-ds-secondary dark:text-dark-secondary uppercase tracking-widest mb-2">
       {label}
     </p>
     <p className={`text-2xl font-bold tracking-tighter ${valueClassName}`}>{value}</p>

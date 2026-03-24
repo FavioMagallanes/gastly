@@ -13,9 +13,13 @@ interface ExpenseListProps {
 export const ExpenseList = ({ expenses, onEdit, onDelete, onAddFirst }: ExpenseListProps) => {
   if (expenses.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 py-16 text-center border border-ds-border rounded-xl">
-        <Icon name="receipt-dollar" size="4xl" className="text-ds-secondary" />
-        <p className="text-sm text-ds-secondary leading-relaxed">
+      <div className="flex flex-col items-center gap-3 py-16 text-center border border-ds-border dark:border-dark-border rounded-xl">
+        <Icon
+          name="receipt-dollar"
+          size="4xl"
+          className="text-ds-secondary dark:text-dark-secondary"
+        />
+        <p className="text-sm text-ds-secondary dark:text-dark-secondary leading-relaxed">
           Todavía no hay gastos registrados este mes.
         </p>
         {onAddFirst && (
