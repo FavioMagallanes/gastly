@@ -12,10 +12,8 @@ interface ConfirmToastOptions {
 }
 
 const VARIANT_STYLES = {
-  danger:
-    'text-white bg-danger rounded-lg hover:bg-danger-hover',
-  dark:
-    'text-white bg-ds-text dark:bg-dark-text dark:text-dark-bg rounded-lg hover:bg-ds-text/90 dark:hover:bg-dark-text/90',
+  danger: 'text-white bg-danger rounded-lg hover:bg-danger-hover',
+  dark: 'text-white bg-ds-text dark:bg-dark-text dark:text-dark-bg rounded-lg hover:bg-ds-text/90 dark:hover:bg-dark-text/90',
 }
 
 /**
@@ -37,9 +35,7 @@ export const confirmToast = ({
         <div>
           <p className="text-sm font-semibold text-ds-text dark:text-dark-text">{title}</p>
           {description && (
-            <p className="text-xs text-ds-secondary dark:text-dark-secondary mt-1">
-              {description}
-            </p>
+            <p className="text-xs text-ds-secondary dark:text-dark-secondary mt-1">{description}</p>
           )}
         </div>
         <div className="flex gap-2">

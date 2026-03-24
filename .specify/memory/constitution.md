@@ -1,7 +1,7 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: (template) → 1.0.0; amended 1.0.0 → 1.0.1; amended 1.0.1 → 1.0.2; amended 1.0.2 → 2.0.0 (MAJOR)
+Version change: (template) → 1.0.0; amended 1.0.0 → 1.0.1; amended 1.0.1 → 1.0.2; amended 1.0.2 → 2.0.0 (MAJOR); amended 2.0.0 → 2.1.0 (MINOR)
 Added principles:
   - I. Precisión Matemática
   - II. Privacidad de Datos (AMENDED v2.0.0: permitir cloud storage con condiciones)
@@ -57,11 +57,14 @@ terceros sin consentimiento explícito.
 - Los datos en tránsito DEBEN usar HTTPS (garantizado por Supabase).
 - La aplicación DEBE seguir funcionando para el mes activo sin conexión a internet
   (el cierre de mes y consulta de reportes históricos SÍ requieren conexión).
-- Cualquier exportación de datos DEBE advertir al usuario sobre el contenido sensible antes de
-  proceder.
+- Cualquier exportación de datos (PDF, CSV, compartir) DEBE advertir al usuario sobre el
+  contenido sensible antes de proceder. La generación del archivo DEBE ocurrir íntegramente
+  en el cliente; no se permite enviar datos financieros a servicios de terceros para renderizar.
 - Las dependencias de terceros DEBEN auditarse antes de incorporarse; las que realicen telemetría
-  o envíen datos a la red están **prohibidas** salvo justificación documentada y aprobada
-  (`@supabase/supabase-js` queda aprobada como dependencia de cloud storage).
+  o envíen datos a la red están **prohibidas** salvo justificación documentada y aprobada:
+  - `@supabase/supabase-js` — cloud storage con RLS (aprobada v2.0.0).
+  - `jspdf` + `jspdf-autotable` — generación de PDF 100 % client-side, sin red ni telemetría
+    (aprobada v2.0.0).
 
 ### III. UX de Entrada Rápida
 
@@ -144,4 +147,4 @@ cualquier decisión de diseño o implementación individual.
 - Ante ambigüedad en la interpretación de un principio, prevalece la lectura más restrictiva
   hasta que una enmienda formal la aclare.
 
-**Version**: 2.0.0 | **Ratified**: 2026-03-23 | **Last Amended**: 2026-03-24
+**Version**: 2.1.0 | **Ratified**: 2026-03-23 | **Last Amended**: 2026-03-24

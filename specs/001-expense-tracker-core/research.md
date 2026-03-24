@@ -98,6 +98,54 @@ Simplifica la lógica y evita discrepancias acumuladas por redondeo en cada cuot
 
 ---
 
+## 6. Generación de PDF en el Cliente
+
+**Decision**: jsPDF + jspdf-autotable para generación client-side.
+
+**Rationale**: jsPDF (~280 KB gzipped) es la librería más madura para generar PDFs en el
+navegador sin backend. El plugin `jspdf-autotable` (~30 KB) permite generar tablas con formato
+(bordes, colores, paginación automática) con una API declarativa. Ambas librerías son puro
+JavaScript, no realizan fetch ni telemetría, y cumplen con el Principio II de la constitución.
+La generación ocurre sobre un `MonthlyReport` ya existente en memoria; no requiere nuevas
+consultas a Supabase.
+
+**Alternatives considered**:
+
+- `@react-pdf/renderer` — API React-like con componentes JSX, pero pesa ~500 KB y obliga a
+  mantener un árbol de componentes paralelo al HTML. Overkill para un reporte con 1 tabla.
+- `html2canvas` + `jsPDF` — captura visual del modal como imagen y la embebe en PDF. Produce
+  PDFs pesados con texto no seleccionable; descartado por calidad.
+- `pdfmake` — alternativa a jsPDF con definición declarativa; pesa más (~400 KB) y la
+  comunidad es más pequeña.
+
+---
+
+## 7. Compartir Archivos desde el Navegador
+
+**Decision**: Web Share API (`navigator.share()`) con fallback a descarga directa.
+
+**Rationale**: La Web Share API es nativa del navegador y permite compartir archivos
+directamente al sheet del sistema operativo (WhatsApp, Telegram, email, etc.) sin
+dependencias externas. En Android Chrome y iOS Safari soporta compartir objetos `File`.
+En desktop, el soporte de archivos es limitado (Chrome parcial, Firefox no soporta),
+por lo que se usa descarga directa como fallback transparente.
+
+**Detección de soporte**:
+```typescript
+const canShareFiles = (file: File) =>
+  typeof navigator.share === 'function' &&
+  typeof navigator.canShare === 'function' &&
+  navigator.canShare({ files: [file] })
+```
+
+**Alternatives considered**:
+
+- Generar un link `https://wa.me/?text=...` — solo funciona para texto, no para archivos.
+- Subir el PDF a un storage temporal y compartir URL — viola Principio II (datos salen del
+  dispositivo) y requiere backend.
+
+---
+
 ## 6. Estilo Visual
 
 **Decision**: Tailwind CSS 4 con plugin oficial de Vite (`@tailwindcss/vite`); sin `tailwind.config.js`.

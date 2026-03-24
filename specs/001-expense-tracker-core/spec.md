@@ -143,6 +143,37 @@ verificar que la lista quede vacía y el presupuesto vuelva a estado no configur
 
 ---
 
+### User Story 6 — Exportar reporte mensual como PDF y compartir (Priority: P3)
+
+El usuario puede generar un PDF del reporte de un mes cerrado y compartirlo a través de
+WhatsApp u otra aplicación instalada en su dispositivo.
+
+**Why this priority**: Es un complemento de valor sobre los reportes ya existentes; no bloquea
+ninguna funcionalidad principal pero mejora la utilidad práctica de los datos.
+
+**Independent Test**: Con un reporte mensual cerrado, generar el PDF y verificar que contiene
+el resumen (presupuesto, total gastado, saldo) y la lista completa de gastos con categorías
+y montos correctos.
+
+**Acceptance Scenarios**:
+
+1. **Given** un reporte mensual cerrado visible en el modal de detalle, **When** el usuario
+   presiona "Descargar PDF", **Then** se genera y descarga un archivo PDF con el nombre
+   `reporte-{label}.pdf` que contiene el resumen financiero y la lista de gastos.
+2. **Given** un dispositivo con soporte para Web Share API (móvil), **When** el usuario presiona
+   "Compartir", **Then** se abre el sheet nativo del sistema con el PDF adjunto, permitiendo
+   enviarlo por WhatsApp, Telegram u otra app.
+3. **Given** un navegador de escritorio sin soporte para `navigator.share` con archivos,
+   **When** el usuario presiona "Compartir", **Then** se descarga el PDF directamente como
+   fallback.
+4. **Given** el proceso de generación de PDF en curso, **When** el usuario espera,
+   **Then** se muestra un estado de carga en el botón hasta que el PDF esté listo.
+5. **Given** cualquier flujo de exportación, **When** el PDF se genera,
+   **Then** la generación ocurre 100 % en el cliente; ningún dato financiero se envía a
+   servidores externos (Principio II constitución).
+
+---
+
 ## Requirements _(mandatory)_
 
 ### Functional Requirements
@@ -173,6 +204,12 @@ de gastos`) actualizándolo sincrónicamente al confirmar cualquier alta, edici�
   rápida (picker/dropdown); no se permite entrada de texto libre para la categoría.
 - **FR-012**: Cuando el saldo restante sea negativo, el sistema DEBE mostrarlo con indicación
   visual de alerta (ej. color rojo) sin bloquear el registro de nuevos gastos.
+- **FR-013**: El sistema DEBE permitir generar un archivo PDF a partir de un reporte mensual
+  cerrado, conteniendo el resumen financiero y la lista detallada de gastos. La generación
+  DEBE ocurrir íntegramente en el cliente sin enviar datos a servicios externos.
+- **FR-014**: El sistema DEBE ofrecer la opción de compartir el PDF generado usando la
+  Web Share API nativa cuando esté disponible, con fallback a descarga directa en
+  navegadores sin soporte.
 
 ### Key Entities
 

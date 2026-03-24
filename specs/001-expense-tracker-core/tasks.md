@@ -172,7 +172,8 @@ Phase 1 (Setup)
             ├─► Phase 5 (US4: CRUD)            — requiere Phase 4 completa
             └─► Phase 6 (US5: Reset)           — requiere Phase 2 completa
                     └─► Phase 7 (Integration)  — requiere Phases 3+4+5+6 completas
-                            └─► Phase 8 (Polish) — requiere Phase 7 completa
+                            ├─► Phase 8 (Polish) — requiere Phase 7 completa
+                            └─► Phase 9 (PDF Export) — requiere Phase 7 completa
 ```
 
 ### Tareas paralelizables dentro de Phase 2
@@ -193,7 +194,22 @@ T011 (types) → T012 (math) [P] + T013 (storage) [P] en paralelo
 | **MVP-A** | 1 + 2 + 3   | Configurar presupuesto y ver saldo        |
 | **MVP-B** | + 4         | Registrar gastos y ver resumen            |
 | **MVP-C** | + 5 + 6 + 7 | CRUD completo, reset y SPA integrada      |
-| **Final** | + 8         | Polish y validación de criterios de éxito |
+| **Final** | + 8 + 9     | Polish, exportación PDF y validación      |
+
+---
+
+## Phase 9: US6 — Exportar Reporte como PDF y Compartir
+
+**Purpose**: El usuario puede descargar un PDF del reporte mensual cerrado y compartirlo por WhatsApp u otra app.
+
+**Prerequisites**: Phase 7 completa (reportes funcionales con modal de detalle).
+
+- [ ] T044 Instalar dependencias: `pnpm add jspdf jspdf-autotable` + `pnpm add -D @types/jspdf`
+- [ ] T045 [P] [US6] Crear `src/features/reports/services/report-pdf.ts` — función `generateReportPdf(report: MonthlyReport): Promise<Blob>` que construye el PDF con jsPDF + autoTable: título (label), fecha de cierre, tabla resumen (presupuesto/gastado/saldo), tabla de gastos (descripción, categoría, cuota, monto)
+- [ ] T046 [P] [US6] Crear `src/features/reports/services/share-report.ts` — función `shareReport(blob: Blob, filename: string): Promise<void>` que usa `navigator.share({ files })` si está disponible, con fallback a `URL.createObjectURL` + descarga directa
+- [ ] T047 [US6] Agregar botones "Descargar PDF" y "Compartir" al `report-detail-modal.tsx` con estados de loading; conectar con `generateReportPdf` y `shareReport`
+
+**Checkpoint**: US6 completa; el usuario puede descargar y compartir el PDF del reporte desde el modal de detalle.
 
 ---
 
@@ -217,7 +233,7 @@ T011 (types) → T012 (math) [P] + T013 (storage) [P] en paralelo
 
 | Métrica                            | Valor                  |
 | ---------------------------------- | ---------------------- |
-| Total de tareas                    | 43                     |
+| Total de tareas                    | 47                     |
 | Phase 1 — Setup                    | 10 tareas              |
 | Phase 2 — Foundational             | 6 tareas               |
 | Phase 3 — US1 Budget               | 3 tareas               |
@@ -226,5 +242,6 @@ T011 (types) → T012 (math) [P] + T013 (storage) [P] en paralelo
 | Phase 6 — US5 Reset                | 2 tareas               |
 | Phase 7 — Integración SPA          | 6 tareas               |
 | Phase 8 — Polish                   | 8 tareas               |
-| Tareas paralelizables [P]          | 22 tareas              |
+| Phase 9 — PDF Export + Share        | 4 tareas               |
+| Tareas paralelizables [P]          | 24 tareas              |
 | MVP mínimo (MVP-A)                 | Phases 1–3 → 19 tareas |
