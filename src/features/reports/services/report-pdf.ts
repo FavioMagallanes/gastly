@@ -1,9 +1,10 @@
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import { CATEGORY_LABELS } from '../../../types'
+import type { Expense } from '../../../types'
 import type { MonthlyReport } from '../../../types/database'
 
-/** Formatea un número como moneda ARS para el PDF (sin símbolo para tablas). */
+/** Formatea un número como moneda ARS para el PDF. */
 const fmt = (value: number): string =>
   new Intl.NumberFormat('es-AR', {
     style: 'currency',
@@ -12,10 +13,11 @@ const fmt = (value: number): string =>
   }).format(value)
 
 /**
- * Genera un PDF del reporte mensual 100% client-side.
- * Retorna un Blob listo para descargar o compartir.
+ * Genera un PDF con los gastos seleccionados de un reporte mensual.
+ * Solo incluye la tabla de gastos (sin resumen de presupuesto/saldo).
+ * 100% client-side — no envía datos a la red.
  */
-export const generateReportPdf = (report: MonthlyReport): Blob => {
+export const generateReportPdf = (report: MonthlyReport, expenses: Expense[]): Blob => {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
   const pageWidth = doc.internal.pageSize.getWidth()
 
@@ -32,64 +34,33 @@ export const generateReportPdf = (report: MonthlyReport): Blob => {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
   })
   doc.text(`Cerrado el ${closedDate}`, pageWidth / 2, 29, { align: 'center' })
 
-  // ── Tabla resumen ──
-  doc.setTextColor(0)
-  autoTable(doc, {
-    startY: 36,
-    head: [['Concepto', 'Monto']],
-    body: [
-      ['Presupuesto', fmt(report.budget)],
-      ['Total gastado', fmt(report.total_spent)],
-      ['Saldo', fmt(report.remaining_balance)],
-    ],
-    theme: 'grid',
-    headStyles: {
-      fillColor: [0, 95, 173],
-      textColor: 255,
-      fontStyle: 'bold',
-      halign: 'left',
-    },
-    columnStyles: {
-      1: { halign: 'right' },
-    },
-    styles: {
-      fontSize: 10,
-      cellPadding: 4,
-    },
-    margin: { left: 20, right: 20 },
-    didParseCell: data => {
-      // Saldo en rojo si excede presupuesto
-      if (data.section === 'body' && data.row.index === 2 && data.column.index === 1) {
-        if (report.is_over_budget) {
-          data.cell.styles.textColor = [220, 38, 38]
-          data.cell.styles.fontStyle = 'bold'
-        }
-      }
-    },
-  })
-
   // ── Tabla de gastos ──
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const summaryEndY = (doc as any).lastAutoTable?.finalY ?? 80
+  doc.setTextColor(0)
+
+  const total = expenses.reduce((sum, e) => sum + e.totalAmount, 0)
 
   autoTable(doc, {
-    startY: summaryEndY + 10,
+    startY: 38,
     head: [['Descripción', 'Categoría', 'Cuota', 'Monto']],
-    body: report.expenses.map(expense => [
+    body: expenses.map(expense => [
       expense.description || CATEGORY_LABELS[expense.category],
       CATEGORY_LABELS[expense.category],
       expense.installment ?? '—',
       fmt(expense.totalAmount),
     ]),
+    foot: [['', '', 'Total', fmt(total)]],
     theme: 'striped',
     headStyles: {
       fillColor: [0, 95, 173],
       textColor: 255,
+      fontStyle: 'bold',
+    },
+    footStyles: {
+      fillColor: [240, 240, 240],
+      textColor: [0, 0, 0],
       fontStyle: 'bold',
     },
     columnStyles: {

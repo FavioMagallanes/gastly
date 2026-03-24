@@ -1,4 +1,4 @@
-export type Category = 'BBVA' | 'SUPERVIELLE' | 'PRESTAMO' | 'OTROS'
+export type Category = 'BBVA' | 'SUPERVIELLE' | 'PRESTAMO' | 'SERVICIOS' | 'COLEGIO' | 'OTROS'
 
 /**
  * Expense — Modelo de gasto mensual.
@@ -42,6 +42,8 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   BBVA: 'Tarjeta BBVA',
   SUPERVIELLE: 'Tarjeta Supervielle',
   PRESTAMO: 'Préstamo',
+  SERVICIOS: 'Servicios',
+  COLEGIO: 'Colegio',
   OTROS: 'Otros',
 }
 

@@ -92,10 +92,21 @@ export const Dashboard = () => {
 
         {/* Transactions */}
         <section>
-          <div className="mb-4 border-b border-ds-border dark:border-dark-border pb-2">
+          <div className="mb-4 border-b border-ds-border dark:border-dark-border pb-2 flex items-center justify-between">
             <h2 className="text-lg font-semibold tracking-tight text-ds-text dark:text-dark-text">
               Gastos del mes
             </h2>
+            {budget && (
+              <Button
+                variant="primary"
+                size="sm"
+                aria-label="Nuevo gasto"
+                onClick={openModal}
+                leadingIcon="add"
+              >
+                Nuevo gasto
+              </Button>
+            )}
           </div>
 
           <ExpenseList
@@ -121,14 +132,6 @@ export const Dashboard = () => {
                 Cerrar mes
               </Button>
             </div>
-            <Button
-              variant="primary"
-              size="icon"
-              aria-label="Nuevo gasto"
-              onClick={openModal}
-              leadingIcon="add"
-              className="hidden md:inline-flex"
-            />
           </div>
         )}
 

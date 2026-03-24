@@ -21,10 +21,17 @@ const canShareFile = (file: File): boolean =>
   navigator.canShare({ files: [file] })
 
 /**
- * Comparte un PDF usando la Web Share API nativa.
- * Si el navegador no soporta compartir archivos, descarga directamente.
+ * Resultado de la operación de compartir.
+ * 'shared' = se abrió el sheet nativo, 'downloaded' = fallback a descarga.
  */
-export const shareReport = async (blob: Blob, filename: string): Promise<void> => {
+export type ShareResult = 'shared' | 'downloaded'
+
+/**
+ * Comparte un PDF usando la Web Share API nativa.
+ * Si el navegador no soporta compartir archivos, descarga directamente
+ * y retorna 'downloaded' para que el llamador pueda informar al usuario.
+ */
+export const shareReport = async (blob: Blob, filename: string): Promise<ShareResult> => {
   const file = new File([blob], filename, { type: 'application/pdf' })
 
   if (canShareFile(file)) {
@@ -32,10 +39,12 @@ export const shareReport = async (blob: Blob, filename: string): Promise<void> =
       title: filename.replace('.pdf', ''),
       files: [file],
     })
-  } else {
-    // Fallback: descarga directa en navegadores sin soporte
-    downloadBlob(blob, filename)
+    return 'shared'
   }
+
+  // Fallback: descarga directa en navegadores sin soporte
+  downloadBlob(blob, filename)
+  return 'downloaded'
 }
 
 /**

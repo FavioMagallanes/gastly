@@ -18,15 +18,38 @@ interface ReportDetailModalProps {
 export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) => {
   const [downloading, setDownloading] = useState(false)
   const [sharing, setSharing] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    () => new Set(report.expenses.map((e, i) => e.id ?? String(i))),
+  )
 
   const filename = `reporte-${report.label.toLowerCase().replace(/\s+/g, '-')}.pdf`
 
+  const toggleExpense = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleAll = () => {
+    if (selectedIds.size === report.expenses.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(report.expenses.map((e, i) => e.id ?? String(i))))
+    }
+  }
+
+  const selectedExpenses = report.expenses.filter((e, i) => selectedIds.has(e.id ?? String(i)))
+
   const handleDownload = async () => {
+    if (selectedExpenses.length === 0) return
     setDownloading(true)
     try {
       const { generateReportPdf } = await import('../services/report-pdf')
       const { downloadReport } = await import('../services/share-report')
-      const blob = generateReportPdf(report)
+      const blob = generateReportPdf(report, selectedExpenses)
       downloadReport(blob, filename)
       toast.success('PDF descargado')
     } catch {
@@ -37,14 +60,17 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
   }
 
   const handleShare = async () => {
+    if (selectedExpenses.length === 0) return
     setSharing(true)
     try {
       const { generateReportPdf } = await import('../services/report-pdf')
       const { shareReport } = await import('../services/share-report')
-      const blob = generateReportPdf(report)
-      await shareReport(blob, filename)
+      const blob = generateReportPdf(report, selectedExpenses)
+      const result = await shareReport(blob, filename)
+      if (result === 'downloaded') {
+        toast.info('Tu navegador no soporta compartir archivos. El PDF se descargó.')
+      }
     } catch (err) {
-      // navigator.share throws AbortError if user cancels — don't show error
       if (err instanceof Error && err.name === 'AbortError') return
       toast.error('Error al compartir el reporte')
     } finally {
@@ -79,38 +105,60 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
           </div>
         </div>
 
-        {/* Lista de gastos */}
+        {/* Lista de gastos con selección */}
         <div>
-          <h3 className="text-[13px] font-medium text-ds-text dark:text-dark-text mb-2">
-            Gastos ({report.expenses.length})
-          </h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-[13px] font-medium text-ds-text dark:text-dark-text">
+              Gastos ({selectedIds.size}/{report.expenses.length})
+            </h3>
+            <button
+              type="button"
+              onClick={toggleAll}
+              className="text-[11px] text-primary hover:underline underline-offset-2 cursor-pointer"
+            >
+              {selectedIds.size === report.expenses.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
+            </button>
+          </div>
           <div className="max-h-64 overflow-y-auto space-y-1.5">
-            {report.expenses.map((expense, i) => (
-              <div
-                key={expense.id ?? i}
-                className="flex items-center justify-between rounded-lg border border-ds-border dark:border-dark-border px-3 py-2 text-[13px]"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <Icon
-                    name="credit-card"
-                    size="sm"
-                    className="text-ds-secondary dark:text-dark-secondary shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-ds-text dark:text-dark-text truncate">
-                      {expense.description || CATEGORY_LABELS[expense.category]}
-                    </p>
-                    <p className="text-[11px] text-ds-secondary dark:text-dark-secondary">
-                      {CATEGORY_LABELS[expense.category]}
-                      {expense.installment && ` · Cuota ${expense.installment}`}
-                    </p>
+            {report.expenses.map((expense, i) => {
+              const id = expense.id ?? String(i)
+              const isSelected = selectedIds.has(id)
+              return (
+                <div
+                  key={id}
+                  onClick={() => toggleExpense(id)}
+                  className={`flex items-center justify-between rounded-lg border px-3 py-2 text-[13px] cursor-pointer transition-colors ${
+                    isSelected
+                      ? 'border-primary/40 bg-primary/5 dark:bg-primary/10'
+                      : 'border-ds-border dark:border-dark-border opacity-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div
+                      className={`size-4 shrink-0 rounded border flex items-center justify-center transition-colors ${
+                        isSelected
+                          ? 'bg-primary border-primary'
+                          : 'border-ds-border dark:border-dark-border'
+                      }`}
+                    >
+                      {isSelected && <Icon name="check" size="xs" className="text-white" />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-ds-text dark:text-dark-text truncate">
+                        {expense.description || CATEGORY_LABELS[expense.category]}
+                      </p>
+                      <p className="text-[11px] text-ds-secondary dark:text-dark-secondary">
+                        {CATEGORY_LABELS[expense.category]}
+                        {expense.installment && ` · Cuota ${expense.installment}`}
+                      </p>
+                    </div>
                   </div>
+                  <span className="font-medium text-ds-text dark:text-dark-text shrink-0 ml-2">
+                    {formatCurrency(expense.totalAmount)}
+                  </span>
                 </div>
-                <span className="font-medium text-ds-text dark:text-dark-text shrink-0 ml-2">
-                  {formatCurrency(expense.totalAmount)}
-                </span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
@@ -122,7 +170,7 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
             fullWidth
             leadingIcon="download"
             onClick={handleDownload}
-            disabled={downloading}
+            disabled={downloading || selectedIds.size === 0}
           >
             {downloading ? 'Generando...' : 'Descargar PDF'}
           </Button>
@@ -132,7 +180,7 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
             fullWidth
             leadingIcon="share"
             onClick={handleShare}
-            disabled={sharing}
+            disabled={sharing || selectedIds.size === 0}
           >
             {sharing ? 'Compartiendo...' : 'Compartir'}
           </Button>

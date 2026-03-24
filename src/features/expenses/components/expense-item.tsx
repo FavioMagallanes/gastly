@@ -20,6 +20,16 @@ const CATEGORY_ICON: Record<string, { icon: string; bg: string; fg: string }> = 
     bg: 'bg-orange-100 dark:bg-orange-900/30',
     fg: 'text-orange-600 dark:text-orange-400',
   },
+  SERVICIOS: {
+    icon: 'payment',
+    bg: 'bg-cyan-100 dark:bg-cyan-900/30',
+    fg: 'text-cyan-600 dark:text-cyan-400',
+  },
+  COLEGIO: {
+    icon: 'payment',
+    bg: 'bg-pink-100 dark:bg-pink-900/30',
+    fg: 'text-pink-600 dark:text-pink-400',
+  },
   OTROS: {
     icon: 'payment',
     bg: 'bg-green-100 dark:bg-green-900/30',

@@ -7,7 +7,7 @@ interface CategoryPickerProps {
   onChange: (category: Category) => void
 }
 
-const CATEGORIES: Category[] = ['BBVA', 'SUPERVIELLE', 'PRESTAMO', 'OTROS']
+const CATEGORIES: Category[] = ['BBVA', 'SUPERVIELLE', 'PRESTAMO', 'SERVICIOS', 'COLEGIO', 'OTROS']
 
 export const CategoryPicker = ({ value, onChange }: CategoryPickerProps) => {
   const isDefault = value === 'OTROS'

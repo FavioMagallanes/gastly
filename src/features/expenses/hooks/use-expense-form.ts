@@ -15,14 +15,16 @@ interface ExpenseFormState {
   description: string
   category: Category
   totalAmount: string
-  installment: string
+  currentInstallment: string
+  totalInstallments: string
 }
 
 const INITIAL_STATE: ExpenseFormState = {
   description: '',
   category: 'OTROS',
   totalAmount: '',
-  installment: '',
+  currentInstallment: '',
+  totalInstallments: '',
 }
 
 export const useExpenseForm = (onSuccess?: () => void) => {
@@ -45,8 +47,16 @@ export const useExpenseForm = (onSuccess?: () => void) => {
     if (!fields.totalAmount || isNaN(amount) || amount <= 0)
       next.totalAmount = 'Ingresá un monto válido mayor a 0'
 
-    if (showInstallments && !fields.installment.trim())
-      next.installment = 'Ingresá la cuota (ej: 1/6)'
+    if (showInstallments) {
+      const current = parseInt(fields.currentInstallment)
+      const total = parseInt(fields.totalInstallments)
+      if (!fields.currentInstallment || isNaN(current) || current < 1)
+        next.currentInstallment = 'Cuota actual inválida'
+      if (!fields.totalInstallments || isNaN(total) || total < 1)
+        next.totalInstallments = 'Total de cuotas inválido'
+      if (current > total && !next.currentInstallment && !next.totalInstallments)
+        next.currentInstallment = 'No puede superar el total'
+    }
 
     setErrors(next)
     return Object.keys(next).length === 0
@@ -59,7 +69,9 @@ export const useExpenseForm = (onSuccess?: () => void) => {
       description: fields.description || undefined,
       category: fields.category,
       totalAmount: parseFloat(fields.totalAmount),
-      installment: showInstallments ? fields.installment.trim() : undefined,
+      installment: showInstallments
+        ? `${fields.currentInstallment}/${fields.totalInstallments}`
+        : undefined,
     })
 
     setFields(INITIAL_STATE)

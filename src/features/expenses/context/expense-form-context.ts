@@ -6,7 +6,8 @@ export interface ExpenseFormFields {
   description: string
   category: Category
   totalAmount: string
-  installment: string
+  currentInstallment: string
+  totalInstallments: string
 }
 
 export interface ExpenseFormContextValue {

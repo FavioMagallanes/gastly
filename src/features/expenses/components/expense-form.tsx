@@ -56,6 +56,16 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
 
   return (
     <div className="flex flex-col gap-5 w-full">
+      <Field label="Descripción">
+        <StitchInput
+          type="text"
+          placeholder="¿Qué compraste?"
+          value={fields.description}
+          onChange={e => setField('description', e.target.value)}
+          autoFocus
+        />
+      </Field>
+
       <Field label="Monto" error={errors.totalAmount}>
         <StitchInput
           ref={amountRef}
@@ -67,16 +77,6 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
           value={fields.totalAmount}
           onChange={e => setField('totalAmount', e.target.value)}
           error={errors.totalAmount}
-          autoFocus
-        />
-      </Field>
-
-      <Field label="Descripción">
-        <StitchInput
-          type="text"
-          placeholder="¿Qué compraste?"
-          value={fields.description}
-          onChange={e => setField('description', e.target.value)}
         />
       </Field>
 
@@ -86,14 +86,31 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         </div>
         {showInstallments && (
           <div className="flex-1">
-            <Field label="Cuotas" error={errors.installment}>
-              <StitchInput
-                type="text"
-                placeholder="ej: 1 de 6"
-                value={fields.installment}
-                onChange={e => setField('installment', e.target.value)}
-                error={errors.installment}
-              />
+            <Field
+              label="Cuotas"
+              error={errors.currentInstallment || errors.totalInstallments}
+            >
+              <div className="flex items-center gap-2">
+                <StitchInput
+                  type="number"
+                  min="1"
+                  placeholder="1"
+                  value={fields.currentInstallment}
+                  onChange={e => setField('currentInstallment', e.target.value)}
+                  error={errors.currentInstallment}
+                />
+                <span className="text-ds-secondary dark:text-dark-secondary text-sm font-medium shrink-0">
+                  de
+                </span>
+                <StitchInput
+                  type="number"
+                  min="1"
+                  placeholder="6"
+                  value={fields.totalInstallments}
+                  onChange={e => setField('totalInstallments', e.target.value)}
+                  error={errors.totalInstallments}
+                />
+              </div>
             </Field>
           </div>
         )}
@@ -103,8 +120,8 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg px-3 py-2.5">
           <Icon name="info" size="base" className="text-primary mt-0.5" />
           <p className="text-xs text-ds-secondary dark:text-dark-secondary leading-relaxed">
-            <span className="font-semibold text-ds-text dark:text-dark-text">Pro tip:</span> Escribí
-            "1/6" en cuotas para indicar que pagás la cuota 1 de 6 este mes.
+            <span className="font-semibold text-ds-text dark:text-dark-text">Pro tip:</span>{' '}
+            Indicá la cuota actual y el total (ej: 1 de 6).
           </p>
         </div>
       )}
