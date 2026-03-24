@@ -67,11 +67,11 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
       const { shareReport } = await import('../services/share-report')
       const blob = generateReportPdf(report, selectedExpenses)
       const result = await shareReport(blob, filename)
-      if (result === 'downloaded') {
-        toast.info('Tu navegador no soporta compartir archivos. El PDF se descargó.', {
-          position: 'top-center',
-          duration: 5000,
-        })
+      if (result === 'unsupported') {
+        toast.info(
+          'Tu navegador no soporta compartir archivos. Usá el botón "Descargar PDF" para guardarlo.',
+          { position: 'top-center', duration: 5000 },
+        )
       }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return
