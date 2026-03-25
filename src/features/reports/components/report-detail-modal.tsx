@@ -150,10 +150,10 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
                     </div>
                     <div className="min-w-0">
                       <p className="text-ds-text dark:text-dark-text truncate">
-                        {expense.description || CATEGORY_LABELS[expense.category]}
+                        {expense.description || CATEGORY_LABELS[expense.categoryId]}
                       </p>
                       <p className="text-[11px] text-ds-secondary dark:text-dark-secondary">
-                        {CATEGORY_LABELS[expense.category]}
+                        {CATEGORY_LABELS[expense.categoryId]}
                         {expense.installment && ` · Cuota ${expense.installment}`}
                       </p>
                     </div>

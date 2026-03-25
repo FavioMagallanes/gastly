@@ -1,25 +1,27 @@
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useExpenseStore } from '../../../store/expense-store'
-import { isCardCategory } from '../../../types'
-import type { Expense, Category } from '../../../types'
+import { isCardCategory, CATEGORIES } from '../../../types'
+import type { Expense } from '../../../types'
 
 interface EditFormState {
   description: string
-  category: Category
+  categoryId: string
   totalAmount: string
   currentInstallment: string
   totalInstallments: string
+  banco: string
 }
 
 const toFormState = (expense: Expense): EditFormState => {
   const [current, total] = (expense.installment ?? '').split('/')
   return {
     description: expense.description ?? '',
-    category: expense.category,
+    categoryId: expense.categoryId,
     totalAmount: String(expense.totalAmount),
     currentInstallment: current ?? '',
     totalInstallments: total ?? '',
+    banco: expense.banco ?? '',
   }
 }
 
@@ -29,12 +31,15 @@ export const useEditExpenseForm = (expense: Expense, onSuccess?: () => void) => 
   const [errors, setErrors] = useState<Partial<Record<keyof EditFormState, string>>>({})
   const amountRef = useRef<HTMLInputElement>(null)
 
-  const showInstallments = isCardCategory(fields.category)
+  const showInstallments = isCardCategory(fields.categoryId)
 
   const setField = <K extends keyof EditFormState>(key: K, value: EditFormState[K]) => {
     setFields(prev => ({ ...prev, [key]: value }))
     if (errors[key]) setErrors(prev => ({ ...prev, [key]: undefined }))
   }
+
+  const categoryObj = CATEGORIES.find(c => c.id === fields.categoryId)
+  const requiresBank = !!categoryObj?.requiresBank
 
   const validate = (): boolean => {
     const next: Partial<Record<keyof EditFormState, string>> = {}
@@ -42,6 +47,8 @@ export const useEditExpenseForm = (expense: Expense, onSuccess?: () => void) => 
 
     if (!fields.totalAmount || isNaN(amount) || amount <= 0)
       next.totalAmount = 'Ingresá un monto válido mayor a 0'
+
+    if (requiresBank && !fields.banco) next.banco = 'Seleccioná un banco'
 
     if (showInstallments) {
       const current = parseInt(fields.currentInstallment)
@@ -63,11 +70,12 @@ export const useEditExpenseForm = (expense: Expense, onSuccess?: () => void) => 
 
     updateExpense(expense.id, {
       description: fields.description || undefined,
-      category: fields.category,
+      categoryId: fields.categoryId,
       totalAmount: parseFloat(fields.totalAmount),
       installment: showInstallments
         ? `${fields.currentInstallment}/${fields.totalInstallments}`
         : undefined,
+      banco: requiresBank ? fields.banco || undefined : undefined,
     })
 
     toast.success('Gasto actualizado')
@@ -81,5 +89,6 @@ export const useEditExpenseForm = (expense: Expense, onSuccess?: () => void) => 
     amountRef,
     setField,
     handleSubmit,
+    requiresBank,
   }
 }

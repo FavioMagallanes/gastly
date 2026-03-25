@@ -15,7 +15,7 @@ export interface ExpenseFormContextValue {
   fields: ExpenseFormFields
   errors: ExpenseFormErrors
   showInstallments: boolean
-  amountRef: React.RefObject<HTMLInputElement>
+  amountRef: React.RefObject<HTMLInputElement | null>
   setField: <K extends keyof ExpenseFormFields>(key: K, value: ExpenseFormFields[K]) => void
   handleSubmit: () => void
   requiresBank: boolean // nuevo campo
