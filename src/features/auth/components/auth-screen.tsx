@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../context/auth-context'
 import { Button } from '../../../shared/ui/button'
-import { Icon } from '../../../shared/ui/icon'
 import { toast } from 'sonner'
 
 type AuthMode = 'login' | 'signup'
@@ -52,84 +51,93 @@ export const AuthScreen = () => {
   }
 
   return (
-    <main className="min-h-screen bg-white dark:bg-dark-bg flex items-center justify-center transition-colors">
-      <div className="w-full max-w-sm px-6">
-        {/* Logo / Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-primary/10 mb-4">
-            <Icon name="receipt-dollar" size="2xl" className="text-primary" />
+    <div className="relative flex h-screen w-full items-center justify-center overflow-hidden px-6 md:px-8">
+      <div
+        className={[
+          'relative flex w-full max-w-sm flex-col justify-between p-6 md:p-8 border border-[#232329] bg-[radial-gradient(50%_80%_at_20%_0%,#232329_0%,transparent_100%)]',
+          'dark:bg-[radial-gradient(50%_80%_at_20%_0%,#232329_0%,transparent_100%)]',
+        ].join(' ')}
+      >
+        {/* Bordes absolutos */}
+        <div className="absolute -inset-y-6 -left-px w-px bg-[#3f3f46]" />
+        <div className="absolute -inset-y-6 -right-px w-px bg-[#3f3f46]" />
+        <div className="absolute -inset-x-6 -top-px h-px bg-[#3f3f46]" />
+        <div className="absolute -inset-x-6 -bottom-px h-px bg-[#3f3f46]" />
+
+        {/* + esquina superior izquierda */}
+        <div className="absolute left-0 top-0 -translate-x-px -translate-y-3 w-px h-6 bg-[#a1a1aa]" />
+        <div className="absolute left-0 top-0 -translate-x-3 -translate-y-px h-px w-6 bg-[#a1a1aa]" />
+        {/* + esquina inferior derecha */}
+        <div className="absolute right-0 bottom-0 translate-x-px translate-y-3 w-px h-6 bg-[#a1a1aa]" />
+        <div className="absolute right-0 bottom-0 translate-x-3 translate-y-px h-px w-6 bg-[#a1a1aa]" />
+
+        <div className="w-full max-w-sm animate-in space-y-8">
+          <div className="flex flex-col space-y-1 items-center">
+            <h1 className="font-bold text-2xl tracking-wide text-white">Gastly</h1>
+            <p className="text-base text-[#b3b3c0]">
+              {isLogin ? 'Iniciá sesión para continuar' : 'Creá tu cuenta para empezar'}
+            </p>
           </div>
-          <h1 className="text-2xl font-bold tracking-tighter text-ds-text dark:text-dark-text">
-            Gastly
-          </h1>
-          <p className="text-ds-secondary dark:text-dark-secondary text-[13px] mt-1">
-            {isLogin ? 'Iniciá sesión para continuar' : 'Creá tu cuenta para empezar'}
-          </p>
+          <div className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-[13px] font-medium text-[#e5e5ee] mb-2"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="tu@email.com"
+                  autoComplete="email"
+                  autoFocus
+                  className="w-full h-12 px-4 rounded-lg border border-[#232329] bg-[#232329] text-[#e5e5ee] placeholder:text-[#b3b3c0] text-[15px] outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-[13px] font-medium text-[#e5e5ee] mb-2"
+                >
+                  Contraseña
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                  autoComplete={isLogin ? 'current-password' : 'new-password'}
+                  className="w-full h-12 px-4 rounded-lg border border-[#232329] bg-[#232329] text-[#e5e5ee] placeholder:text-[#b3b3c0] text-[15px] outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                />
+              </div>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                fullWidth
+                disabled={loading}
+                className="mt-4"
+              >
+                {loading ? 'Cargando...' : isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
+              </Button>
+            </form>
+            <div className="text-center mt-2">
+              <button
+                type="button"
+                onClick={toggleMode}
+                className="text-primary hover:underline underline-offset-2 font-medium cursor-pointer text-[13px]"
+              >
+                {isLogin ? '¿No tenés cuenta? Crear cuenta' : '¿Ya tenés cuenta? Iniciar sesión'}
+              </button>
+            </div>
+          </div>
         </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-[13px] font-medium text-ds-text dark:text-dark-text mb-1.5"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="tu@email.com"
-              autoComplete="email"
-              autoFocus
-              className="w-full h-10 px-3 rounded-lg border border-ds-border dark:border-dark-border bg-white dark:bg-dark-surface text-ds-text dark:text-dark-text placeholder:text-ds-secondary/50 dark:placeholder:text-dark-secondary/50 text-[14px] outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-[13px] font-medium text-ds-text dark:text-dark-text mb-1.5"
-            >
-              Contraseña
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Mínimo 6 caracteres"
-              autoComplete={isLogin ? 'current-password' : 'new-password'}
-              className="w-full h-10 px-3 rounded-lg border border-ds-border dark:border-dark-border bg-white dark:bg-dark-surface text-ds-text dark:text-dark-text placeholder:text-ds-secondary/50 dark:placeholder:text-dark-secondary/50 text-[14px] outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            fullWidth
-            disabled={loading}
-            className="mt-2"
-          >
-            {loading ? 'Cargando...' : isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
-          </Button>
-        </form>
-
-        {/* Toggle mode */}
-        <p className="text-center text-[13px] text-ds-secondary dark:text-dark-secondary mt-6">
-          {isLogin ? '¿No tenés cuenta?' : '¿Ya tenés cuenta?'}{' '}
-          <button
-            type="button"
-            onClick={toggleMode}
-            className="text-primary hover:underline underline-offset-2 font-medium cursor-pointer"
-          >
-            {isLogin ? 'Crear cuenta' : 'Iniciar sesión'}
-          </button>
-        </p>
       </div>
-    </main>
+    </div>
   )
 }
