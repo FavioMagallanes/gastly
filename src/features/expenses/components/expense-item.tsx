@@ -80,7 +80,7 @@ export const ExpenseItem = ({ expense, onEdit, onDelete }: ExpenseItemProps) => 
           )}
         </div>
         {(onEdit || onDelete) && (
-          <div className="flex gap-1 md:invisible md:group-hover:visible">
+          <div className="flex gap-1">
             {onEdit && (
               <Button
                 variant="ghost"

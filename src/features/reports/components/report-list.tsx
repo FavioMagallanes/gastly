@@ -77,7 +77,7 @@ export const ReportList = ({ reports, loading, onSelect, onDelete }: ReportListP
                 e.stopPropagation()
                 onDelete(report.id, report.label)
               }}
-              className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+              className="shrink-0"
               leadingIcon="delete"
             />
           </div>
