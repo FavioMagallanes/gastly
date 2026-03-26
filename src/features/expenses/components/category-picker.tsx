@@ -1,11 +1,5 @@
 import { CATEGORIES } from '../../../types'
 import type { Category } from '../../../types'
-import { Icon } from '../../../shared/ui/icon'
-
-interface CategoryPickerProps {
-  value: string // id de la categoría
-  onChange: (categoryId: string) => void
-}
 
 function renderOptions(categories: Category[], level = 0): React.ReactNode[] {
   return categories.flatMap(category => [
@@ -14,6 +8,11 @@ function renderOptions(categories: Category[], level = 0): React.ReactNode[] {
     </option>,
     ...(category.subcategories ? renderOptions(category.subcategories, level + 1) : []),
   ])
+}
+
+interface CategoryPickerProps {
+  value: string // id de la categoría
+  onChange: (categoryId: string) => void
 }
 
 export const CategoryPicker = ({ value, onChange }: CategoryPickerProps) => {
