@@ -19,16 +19,16 @@ export const AuthScreen = () => {
 
   // Clases condicionales según tema
   const cardBase =
-    'relative flex w-full max-w-sm flex-col justify-between p-6 md:p-8 border rounded-lg shadow-sm'
+    'relative flex w-full max-w-sm flex-col justify-between p-6 md:p-8 border rounded-none shadow-sm'
   const cardTheme = isDark
     ? 'bg-dark-surface border-dark-border text-dark-text'
     : 'bg-white border-gray-200 text-gray-900'
   const labelClass = isDark
-    ? 'block text-[13px] font-medium text-ds-text mb-2'
-    : 'block text-[13px] font-medium text-gray-700 mb-2'
+    ? 'block text-[11px] font-semibold text-dark-secondary uppercase tracking-widest mb-1.5'
+    : 'block text-[11px] font-semibold text-ds-secondary uppercase tracking-widest mb-1.5'
   const inputClass = isDark
-    ? 'w-full h-12 px-4 rounded-lg border bg-dark-surface text-ds-text placeholder:text-ds-secondary outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors border-dark-border'
-    : 'w-full h-12 px-4 rounded-lg border bg-white text-gray-900 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors border-gray-300'
+    ? 'w-full h-11 px-3 rounded-none border bg-dark-surface text-dark-text placeholder:text-dark-secondary/50 outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary transition-all border-dark-border text-sm font-medium'
+    : 'w-full h-11 px-3 rounded-none border bg-surface text-ds-text placeholder:text-ds-secondary/50 outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary transition-all border-ds-border text-sm font-medium'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,7 +69,7 @@ export const AuthScreen = () => {
   return (
     <div className="relative flex h-screen w-full items-center justify-center overflow-hidden px-6 md:px-8">
       <div className={[cardBase, cardTheme].join(' ')}>
-        {/* Bordes absolutos decorativos (mantener para estilo) */}
+        {/* Bordes absolutos decorativos (líneas largas) */}
         <div className="absolute -inset-y-6 -left-px w-px bg-ds-border dark:bg-dark-border" />
         <div className="absolute -inset-y-6 -right-px w-px bg-ds-border dark:bg-dark-border" />
         <div className="absolute -inset-x-6 -top-px h-px bg-ds-border dark:bg-dark-border" />
@@ -136,6 +136,17 @@ export const AuthScreen = () => {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Capa decorativa superior: Cruces de esquinas (Contraste dinámico) */}
+        <div className="absolute inset-0 pointer-events-none z-10">
+          {/* + esquina superior izquierda */}
+          <div className="absolute left-0 top-0 -translate-x-px -translate-y-3 w-px h-6 bg-[#a1a1aa] dark:bg-white" />
+          <div className="absolute left-0 top-0 -translate-x-3 -translate-y-px h-px w-6 bg-[#a1a1aa] dark:bg-white" />
+
+          {/* + esquina inferior derecha */}
+          <div className="absolute right-0 bottom-0 translate-x-px translate-y-3 w-px h-6 bg-[#a1a1aa] dark:bg-white" />
+          <div className="absolute right-0 bottom-0 translate-x-3 translate-y-px h-px w-6 bg-[#a1a1aa] dark:bg-white" />
         </div>
       </div>
     </div>
