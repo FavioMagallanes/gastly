@@ -26,7 +26,7 @@ export const ReportList = ({ reports, loading, onSelect, onDelete }: ReportListP
   if (reports.length === 0) {
     return (
       <div className="text-center py-8 text-ds-secondary dark:text-dark-secondary text-[13px]">
-        <Icon name="receipt-dollar" size="2xl" className="mx-auto mb-2 opacity-40" />
+        <Icon name="receipt-dollar" size="xl" className="mx-auto mb-2 opacity-40" />
         <p>No hay reportes guardados</p>
         <p className="text-[11px] mt-1">Cerrá tu primer mes para generar un reporte</p>
       </div>

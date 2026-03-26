@@ -1,5 +1,3 @@
-import { jsPDF } from 'jspdf'
-import autoTable from 'jspdf-autotable'
 import { CATEGORY_LABELS, CATEGORIES } from '../../../types'
 import type { Expense } from '../../../types'
 import type { MonthlyReport } from '../../../types/database'
@@ -14,10 +12,21 @@ const fmt = (value: number): string =>
 
 /**
  * Genera un PDF con los gastos seleccionados de un reporte mensual.
- * Solo incluye la tabla de gastos (sin resumen de presupuesto/saldo).
- * 100% client-side — no envía datos a la red.
+ * Se importa `jspdf` y `jspdf-autotable` dinámicamente para reducir el bundle inicial.
+ * Devuelve una Promise que resuelve con el Blob del PDF.
  */
-export const generateReportPdf = (report: MonthlyReport, expenses: Expense[]): Blob => {
+export const generateReportPdf = async (
+  report: MonthlyReport,
+  expenses: Expense[],
+): Promise<Blob> => {
+  // Import dinámico de librerías pesadas
+  const { jsPDF } = await import('jspdf')
+  const autoTableModule = await import('jspdf-autotable')
+  // Aceptar que el módulo pueda exportar default o ser la propia función
+  const autoTable =
+    (autoTableModule as unknown as { default?: (doc: unknown, opts: unknown) => void }).default ??
+    (autoTableModule as unknown as (doc: unknown, opts: unknown) => void)
+
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
   const pageWidth = doc.internal.pageSize.getWidth()
 

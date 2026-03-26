@@ -49,7 +49,7 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
     try {
       const { generateReportPdf } = await import('../services/report-pdf')
       const { downloadReport } = await import('../services/share-report')
-      const blob = generateReportPdf(report, selectedExpenses)
+      const blob = await generateReportPdf(report, selectedExpenses)
       downloadReport(blob, filename)
       toast.success('PDF descargado')
     } catch {
@@ -65,7 +65,7 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
     try {
       const { generateReportPdf } = await import('../services/report-pdf')
       const { shareReport } = await import('../services/share-report')
-      const blob = generateReportPdf(report, selectedExpenses)
+      const blob = await generateReportPdf(report, selectedExpenses)
       const result = await shareReport(blob, filename)
       if (result === 'unsupported') {
         toast.info(
@@ -146,7 +146,7 @@ export const ReportDetailModal = ({ report, onClose }: ReportDetailModalProps) =
                           : 'border-ds-border dark:border-dark-border'
                       }`}
                     >
-                      {isSelected && <Icon name="check" size="xs" className="text-white" />}
+                      {isSelected && <Icon name="check" size="sm" className="text-white" />}
                     </div>
                     <div className="min-w-0">
                       <p className="text-ds-text dark:text-dark-text truncate">
