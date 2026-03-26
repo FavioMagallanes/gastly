@@ -34,10 +34,10 @@ export const BudgetForm = ({ onSubmit, isEditing, initialValue }: BudgetFormProp
             onChange={e => setValue(e.target.value)}
             className="w-full bg-transparent border-none p-0 outline-none text-ds-text dark:text-dark-text font-medium text-sm placeholder:text-ds-secondary/60 dark:placeholder:text-dark-secondary/60 placeholder:font-normal"
           />
-          <Icon name="pencil" size="base" className="text-ds-secondary dark:text-dark-secondary" />
+          <Icon name="calculator" size="base" className="text-ds-secondary dark:text-dark-secondary" />
         </div>
       </div>
-      <Button type="submit" variant="primary" size="md">
+      <Button type="submit" variant="primary" size="md" className="rounded-none">
         {isEditing ? 'Actualizar' : 'Guardar'}
       </Button>
     </form>

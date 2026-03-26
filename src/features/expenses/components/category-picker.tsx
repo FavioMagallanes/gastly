@@ -26,17 +26,10 @@ export const CategoryPicker = ({ value, onChange }: CategoryPickerProps) => {
         <select
           value={value}
           onChange={e => onChange(e.target.value)}
-          className="w-full appearance-none border border-ds-border dark:border-dark-border rounded-lg bg-surface dark:bg-dark-surface px-3 py-2.5 pr-10 text-sm outline-none transition-all focus:ring-1 focus:ring-primary/50 cursor-pointer [&>option]:font-normal [&>option]:text-ds-text [&>option]:bg-white dark:[&>option]:text-dark-text dark:[&>option]:bg-dark-surface"
+          className="w-full appearance-none border border-ds-border dark:border-dark-border rounded-none bg-surface dark:bg-dark-surface px-3 py-2.5 text-sm outline-none transition-all focus:ring-1 focus:ring-primary/50 cursor-pointer [&>option]:font-normal [&>option]:text-ds-text [&>option]:bg-white dark:[&>option]:text-dark-text dark:[&>option]:bg-dark-surface"
         >
           {renderOptions(CATEGORIES)}
         </select>
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-          <Icon
-            name="unfold-more"
-            size="base"
-            className="text-ds-secondary dark:text-dark-secondary"
-          />
-        </span>
       </div>
     </div>
   )

@@ -57,7 +57,7 @@ export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) =>
   }
 
   return (
-    <Modal title="Cerrar mes" icon="check" onClose={onClose}>
+    <Modal title="Cerrar mes" icon="calendar-check" onClose={onClose}>
       <div className="space-y-4">
         <p className="text-[13px] text-ds-secondary dark:text-dark-secondary">
           Vas a guardar el reporte de{' '}

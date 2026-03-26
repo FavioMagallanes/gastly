@@ -13,27 +13,25 @@ interface ExpenseItemProps {
 export const ExpenseItem = ({ expense, onEdit, onDelete }: ExpenseItemProps) => {
   const categoryId = expense.categoryId
   const category = CATEGORIES.find(c => c.id === categoryId)
-  const icon = category?.icon ?? 'payment'
   const color = category?.color ?? '#e5e7eb'
   const label = CATEGORY_LABELS[categoryId] ?? 'Otros'
 
   return (
-    <div className="flex items-center justify-between p-3 border border-ds-border dark:border-dark-border rounded-lg hover:bg-[#EFEFEF] dark:hover:bg-dark-hover transition-colors group cursor-pointer">
-      <div className="flex items-center gap-4">
-        <div
-          className={`size-10 rounded-lg flex items-center justify-center shrink-0`}
-          style={{ backgroundColor: color, color: '#ffffff' }}
-        >
-          <Icon name={icon} size="xl" />
-        </div>
+    <div className="flex items-center justify-between p-3 border border-ds-border dark:border-dark-border rounded-none hover:bg-surface dark:hover:bg-dark-hover transition-colors group cursor-pointer">
+      <div className="flex items-center">
         <div>
-          <p className="text-sm font-medium text-ds-text dark:text-dark-text tracking-tight">
+          <p className="text-[13px] font-semibold text-ds-text dark:text-dark-text tracking-tight uppercase">
             {expense.description ?? label}
           </p>
-          <p className="text-[12px] text-ds-secondary dark:text-dark-secondary leading-relaxed">
-            {label}
-            {expense.installment ? ` • Cuota ${expense.installment}` : ''}
-            {' • '}
+          <p className="text-[11px] text-ds-secondary dark:text-dark-secondary tracking-wide uppercase mt-0.5">
+            <span className="font-bold">{label}</span>
+            {expense.installment && (
+              <>
+                <span className="mx-1.5 opacity-30">•</span>
+                {`Cuota ${expense.installment}`}
+              </>
+            )}
+            <span className="mx-1.5 opacity-30">•</span>
             {new Date(expense.registeredAt).toLocaleDateString('es-AR', {
               day: 'numeric',
               month: 'short',

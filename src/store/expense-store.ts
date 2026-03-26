@@ -39,6 +39,7 @@ const buildBudget = (amount: number): Budget => ({
 
 const INITIAL_DATA = { budget: null, expenses: [] as Expense[] }
 
+// Inicializamos con una key genérica; la rehidratación se encargará de cargar los datos reales.
 export const useExpenseStore = create<ExpenseStore>()(
   persist(
     (set, get) => ({
@@ -80,7 +81,7 @@ export const useExpenseStore = create<ExpenseStore>()(
       },
     }),
     {
-      name: getStorageKey(),
+      name: 'gastly-storage-temp',
       storage: createJSONStorage(() => localStorage),
       partialize: s => partialize(s),
     },
@@ -91,26 +92,16 @@ let lastUserId: string | undefined = undefined
 
 /**
  * Rehidrata el store con la storage key del usuario autenticado.
- * Debe llamarse al hacer login/logout para aislar datos por usuario.
  */
 export const rehydrateStore = (userId?: string) => {
-  // Evitar rehidratar si el usuario es el mismo (corrige bug de pérdida de datos al cambiar pestaña)
   if (userId === lastUserId) return
   lastUserId = userId
 
   const storageKey = getStorageKey(userId)
 
-  // Actualizar la key de persistencia y rehidratar
+  // Cambiamos la configuración de persistencia
   useExpenseStore.persist.setOptions({ name: storageKey })
 
-  // Limpiar el estado en memoria antes de rehidratar
-  useExpenseStore.setState({
-    budget: null,
-    expenses: [],
-    isModalOpen: false,
-    editingExpense: null,
-  })
-
-  // Rehidratar desde localStorage con la nueva key
+  // Forzamos la rehidratación desde el nuevo storageKey
   void useExpenseStore.persist.rehydrate()
 }

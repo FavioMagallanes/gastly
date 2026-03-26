@@ -1,4 +1,5 @@
 import { toast } from 'sonner'
+import { cn } from '../../core/utils/cn'
 
 interface ConfirmToastOptions {
   title: string
@@ -11,14 +12,9 @@ interface ConfirmToastOptions {
   onCancel?: () => void
 }
 
-const VARIANT_STYLES = {
-  danger: 'text-white bg-danger rounded-lg hover:bg-danger-hover',
-  dark: 'text-white bg-ds-text dark:bg-dark-text dark:text-dark-bg rounded-lg hover:bg-ds-text/90 dark:hover:bg-dark-text/90',
-}
-
 /**
  * Muestra un toast de confirmación con botones Cancelar / Confirmar.
- * Reemplaza el patrón repetido de `toast.custom()` con JSX inline.
+ * Alineado con la estética 'The Digital Ledger'.
  */
 export const confirmToast = ({
   title,
@@ -31,11 +27,15 @@ export const confirmToast = ({
 }: ConfirmToastOptions) => {
   toast.custom(
     id => (
-      <div className="w-89 bg-white dark:bg-dark-surface rounded-xl shadow-lg border border-ds-border dark:border-dark-border p-5 flex flex-col gap-4">
-        <div>
-          <p className="text-sm font-semibold text-ds-text dark:text-dark-text">{title}</p>
+      <div className="w-full max-w-90 bg-white dark:bg-dark-surface rounded-none shadow-2xl border border-ds-border dark:border-dark-border p-5 flex flex-col gap-5 animate-fade-in-up">
+        <div className="space-y-1.5">
+          <p className="text-[13px] font-bold text-ds-text dark:text-dark-text uppercase tracking-tight">
+            {title}
+          </p>
           {description && (
-            <p className="text-xs text-ds-secondary dark:text-dark-secondary mt-1">{description}</p>
+            <p className="text-[11px] text-ds-secondary dark:text-dark-secondary uppercase tracking-wide leading-relaxed opacity-80">
+              {description}
+            </p>
           )}
         </div>
         <div className="flex gap-2">
@@ -45,7 +45,7 @@ export const confirmToast = ({
               toast.dismiss(id)
               onCancel?.()
             }}
-            className="flex-1 h-9 text-[13px] font-medium text-ds-secondary dark:text-dark-secondary border border-ds-border dark:border-dark-border rounded-lg hover:bg-surface dark:hover:bg-dark-hover transition-colors cursor-pointer"
+            className="flex-1 h-9 text-[11px] font-bold uppercase tracking-widest text-ds-secondary dark:text-dark-secondary border border-ds-border dark:border-dark-border rounded-none hover:bg-surface dark:hover:bg-dark-hover transition-all cursor-pointer"
           >
             {cancelLabel}
           </button>
@@ -55,13 +55,18 @@ export const confirmToast = ({
               toast.dismiss(id)
               onConfirm()
             }}
-            className={`flex-1 h-9 text-[13px] font-semibold transition-colors cursor-pointer ${VARIANT_STYLES[variant]}`}
+            className={cn(
+              'flex-1 h-9 text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer rounded-none text-white',
+              variant === 'danger'
+                ? 'bg-danger hover:bg-danger-hover'
+                : 'bg-ds-text dark:bg-dark-text dark:text-dark-bg hover:opacity-90',
+            )}
           >
             {confirmLabel}
           </button>
         </div>
       </div>
     ),
-    { duration: 10000 },
+    { duration: Infinity },
   )
 }
