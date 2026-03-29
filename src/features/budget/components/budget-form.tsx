@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useEffect, useState } from 'react'
 import { Button } from '../../../shared/ui/button'
 import { Icon } from '../../../shared/ui/icon'
 
@@ -19,7 +19,19 @@ export const BudgetForm = ({
   fieldLabel = 'Ingresar presupuesto del mes',
   disabled = false,
 }: BudgetFormProps) => {
-  const [value, setValue] = useState(initialValue ? String(initialValue) : '')
+  const [value, setValue] = useState(
+    () =>
+      initialValue != null && !Number.isNaN(initialValue) ? String(initialValue) : '',
+  )
+
+  // Sincronizar el input cuando el presupuesto llega del store (p. ej. tras hidratar persist).
+  /* eslint-disable react-hooks/set-state-in-effect -- ajuste de estado local al cambiar la prop `initialValue` */
+  useEffect(() => {
+    if (initialValue != null && !Number.isNaN(initialValue)) {
+      setValue(String(initialValue))
+    }
+  }, [initialValue])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()

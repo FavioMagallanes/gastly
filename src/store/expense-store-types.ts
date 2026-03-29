@@ -29,6 +29,11 @@ export type DataSlice = {
   updatePlannedExpense: (id: string, changes: Partial<Omit<Expense, 'id' | 'registeredAt'>>) => void
   deletePlannedExpense: (id: string) => void
   clearPlan: () => void
+  /** Reemplaza plan local con datos de Supabase (tras fetch). */
+  hydratePlannedFromRemote: (payload: {
+    plannedExpenses: Expense[]
+    plannedBudget: Budget | null
+  }) => void
   resetAll: () => void
   resetExpenses: () => void
   getSummary: () => MonthlySummary

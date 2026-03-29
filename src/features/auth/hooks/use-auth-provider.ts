@@ -12,24 +12,41 @@ export const useAuthProvider = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Obtener sesión actual al montar
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const currentUser = session?.user ?? null
-      setUser(currentUser)
-      rehydrateStore(currentUser?.id)
-      setLoading(false)
-    })
+    let cancelled = false
 
-    // Escuchar cambios de autenticación
+    const bootstrapSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      const currentUser = session?.user ?? null
+      try {
+        await rehydrateStore(currentUser?.id)
+      } catch (err) {
+        console.error('[auth] rehydrateStore failed', err)
+      }
+      if (cancelled) return
+      setUser(currentUser)
+      setLoading(false)
+    }
+
+    void bootstrapSession()
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const currentUser = session?.user ?? null
+      try {
+        await rehydrateStore(currentUser?.id)
+      } catch (err) {
+        console.error('[auth] rehydrateStore failed', err)
+      }
       setUser(currentUser)
-      rehydrateStore(currentUser?.id)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      cancelled = true
+      subscription.unsubscribe()
+    }
   }, [])
 
   const signIn = useCallback(async (email: string, password: string): Promise<string | null> => {

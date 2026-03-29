@@ -86,6 +86,12 @@ export const createDataSlice: StateCreator<ExpenseStore, [], [], DataSlice> = (s
 
   clearPlan: () => set({ plannedExpenses: [], plannedBudget: null }),
 
+  hydratePlannedFromRemote: payload =>
+    set({
+      plannedExpenses: payload.plannedExpenses,
+      plannedBudget: payload.plannedBudget,
+    }),
+
   resetAll: () =>
     set({
       ...INITIAL_DATA_STATE,

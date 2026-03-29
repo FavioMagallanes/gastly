@@ -40,14 +40,29 @@ export const useExpenseStore = create<ExpenseStore>()(
 )
 
 let lastUserId: string | undefined = undefined
+/** Evita que un segundo `rehydrateStore(uid)` resuelva antes que el primero (getSession + onAuthStateChange). */
+let rehydrateInFlight: Promise<void> | null = null
 
-export const rehydrateStore = (userId?: string) => {
-  if (userId === lastUserId) return
+export const rehydrateStore = async (userId?: string): Promise<void> => {
+  if (userId === lastUserId) {
+    if (rehydrateInFlight) await rehydrateInFlight
+    return
+  }
+
   lastUserId = userId
 
   const storageKey = getStorageKey(userId)
 
   useExpenseStore.persist.setOptions({ name: storageKey })
 
-  void useExpenseStore.persist.rehydrate()
+  const run = Promise.resolve(
+    useExpenseStore.persist.rehydrate() as PromiseLike<void>,
+  ).then(() => undefined)
+
+  rehydrateInFlight = run
+  void run.finally(() => {
+    if (rehydrateInFlight === run) rehydrateInFlight = null
+  })
+
+  await run
 }

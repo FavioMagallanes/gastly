@@ -5,6 +5,7 @@ import { fetchReports, closeMonth, deleteReport, updateReport } from '../service
 import type { ReportInsert, ReportUpdatePayload } from '../services/report-service'
 import { LEDGER_SEALED_HINT } from '../../../core/copy/ledger-sealed-hint'
 import { isLedgerCycleReported } from '../utils/is-ledger-cycle-reported'
+import { getPrimedReports } from '../utils/reports-prime-cache'
 import { useAuth } from '../../auth'
 import { toast } from 'sonner'
 
@@ -37,29 +38,36 @@ const commitFetchReportsOutcome = (
 
 export const useReports = () => {
   const { user } = useAuth()
-  const [reports, setReports] = useState<MonthlyReport[]>([])
-  const [loading, setLoading] = useState(true)
+  const userId = user?.id
+
+  const [reports, setReports] = useState<MonthlyReport[]>(() =>
+    user?.id ? getPrimedReports(user.id) ?? [] : [],
+  )
+  const [loading, setLoading] = useState(
+    () => (user?.id ? getPrimedReports(user.id) === null : false),
+  )
   const [selectedReport, setSelectedReport] = useState<MonthlyReport | null>(null)
 
   const syncReportsFromServer = useCallback(async () => {
-    if (!user) {
+    if (!userId) {
       clearReportsState(setReports, setLoading)
       return
     }
     setLoading(true)
     const outcome = await fetchReports()
     commitFetchReportsOutcome(outcome, setReports, setLoading)
-  }, [user])
+  }, [userId])
 
   useEffect(() => {
     let cancelled = false
 
     const run = async () => {
-      if (!user) {
+      if (!userId) {
         clearReportsState(setReports, setLoading)
         return
       }
-      setLoading(true)
+      const skipLoadingUi = getPrimedReports(userId) !== null
+      if (!skipLoadingUi) setLoading(true)
       const outcome = await fetchReports()
       if (cancelled) return
       commitFetchReportsOutcome(outcome, setReports, setLoading)
@@ -69,7 +77,7 @@ export const useReports = () => {
     return () => {
       cancelled = true
     }
-  }, [user])
+  }, [userId])
 
   const handleCloseMonth = useCallback(
     async (report: ReportInsert, onSuccess?: () => void) => {

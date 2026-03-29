@@ -44,10 +44,15 @@ export const Dashboard = () => {
     [],
   )
 
-  const isLedgerSealed =
-    !reportsLoading &&
-    isLedgerCycleReported(reports, ledgerMonthLabel, paymentMonthLabel)
-  const isLedgerActionsLocked = reportsLoading || isLedgerSealed
+  /** No depender de `reportsLoading`: al volver a la pestaña Supabase renueva el token y el objeto
+   * `user` cambia; un refetch ponía loading=true y el ledger “se abría” un instante con datos viejos. */
+  const isLedgerSealed = isLedgerCycleReported(
+    reports,
+    ledgerMonthLabel,
+    paymentMonthLabel,
+  )
+  /** No bloquear el ledger mientras cargan reportes: evita ~1s de UI “vacía” o deshabilitada. */
+  const isLedgerActionsLocked = isLedgerSealed
 
   return (
     <main className="min-h-screen bg-background dark:bg-dark-bg flex justify-center py-12 transition-colors relative">
@@ -68,7 +73,7 @@ export const Dashboard = () => {
           />
           <div className="mt-6">
             <BudgetForm
-              key={budget ? 'editing' : 'new'}
+              key={budget != null ? `ledger-${budget.amount}` : 'ledger-new'}
               onSubmit={handleSetBudget}
               isEditing={!!budget}
               initialValue={budget?.amount}
@@ -146,13 +151,7 @@ export const Dashboard = () => {
                 onClick={() => setShowCloseMonthModal(true)}
                 leadingIcon="check"
                 disabled={!budget || expenses.length === 0 || isLedgerActionsLocked}
-                title={
-                  reportsLoading
-                    ? 'Cargando reportes…'
-                    : isLedgerSealed
-                      ? LEDGER_SEALED_HINT
-                      : undefined
-                }
+                title={isLedgerSealed ? LEDGER_SEALED_HINT : undefined}
               >
                 Cerrar mes
               </Button>

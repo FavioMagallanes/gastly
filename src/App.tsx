@@ -8,12 +8,18 @@ import { queryClient } from './shared/query/query-client'
 import { useTheme } from './shared/hooks/use-theme'
 import { Spinner } from './shared/ui/spinner'
 import { AppToaster } from './shared/ui/app-toaster'
+import { usePlanRemoteSync } from './features/plan'
+import { useReportsBootstrap } from './features/reports'
+import { useExpensePersistReady } from './store/use-expense-persist-ready'
 
 const AppContent = () => {
   const { user, loading } = useAuth()
   const isModalOpen = useExpenseStore(state => state.isModalOpen)
   const editingExpense = useExpenseStore(state => state.editingExpense)
   const { theme } = useTheme()
+  const persistReady = useExpensePersistReady(!!user)
+  const planRemoteReady = usePlanRemoteSync()
+  const reportsBootstrapReady = useReportsBootstrap()
 
   if (loading) {
     return (
@@ -23,10 +29,17 @@ const AppContent = () => {
     )
   }
 
+  const showSessionBootstrapSpinner =
+    !!user && (!persistReady || !planRemoteReady || !reportsBootstrapReady)
+
   return (
     <>
       {!user ? (
         <AuthScreen />
+      ) : showSessionBootstrapSpinner ? (
+        <div className="min-h-screen bg-white dark:bg-dark-bg flex items-center justify-center transition-colors">
+          <Spinner className="text-ds-secondary dark:text-dark-secondary" />
+        </div>
       ) : (
         <div className="min-h-screen bg-white dark:bg-dark-bg transition-colors">
           <Dashboard />

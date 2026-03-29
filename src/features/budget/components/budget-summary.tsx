@@ -50,7 +50,7 @@ export const BudgetSummary = ({
         valueClassName={isOverBudget ? 'text-red-500' : 'text-ds-text dark:text-dark-text'}
         footer={
           <p
-            className={`text-xs mt-6 font-medium flex items-center gap-1 ${isOverBudget ? 'text-red-500' : 'text-green-600'}`}
+            className={`text-xs mt-6 font-medium flex items-center gap-1 ${isOverBudget ? 'text-red-500' : 'text-green-300/80'}`}
           >
             <Icon name={isOverBudget ? 'trending-down' : 'trending-up'} size="sm" />
             {remainingFooterNote ??

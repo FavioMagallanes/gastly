@@ -54,3 +54,41 @@ create policy "Users can update own reports"
   to authenticated
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- ============================================================================
+-- 5. Plan mensual (proyección / a pagar) — una fila por usuario, sincronizada desde la app
+-- ============================================================================
+
+create table if not exists public.user_monthly_plan (
+  user_id            uuid primary key references auth.users(id) on delete cascade,
+  planned_expenses   jsonb not null default '[]'::jsonb,
+  planned_budget     jsonb,
+  updated_at         timestamptz not null default now()
+);
+
+alter table public.user_monthly_plan enable row level security;
+
+create policy "Users can view own monthly plan"
+  on public.user_monthly_plan
+  for select
+  to authenticated
+  using (auth.uid() = user_id);
+
+create policy "Users can insert own monthly plan"
+  on public.user_monthly_plan
+  for insert
+  to authenticated
+  with check (auth.uid() = user_id);
+
+create policy "Users can update own monthly plan"
+  on public.user_monthly_plan
+  for update
+  to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create policy "Users can delete own monthly plan"
+  on public.user_monthly_plan
+  for delete
+  to authenticated
+  using (auth.uid() = user_id);

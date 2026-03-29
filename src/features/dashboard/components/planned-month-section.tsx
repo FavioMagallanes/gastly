@@ -31,11 +31,8 @@ export const PlannedMonthSection = ({
     handleDelete: handlePlannedDelete,
     handleClearPlan,
   } = usePlannedExpenses()
-  const {
-    isImportingInstallments,
-    importFromLatestClosedMonth,
-    latestClosedMonthLabel,
-  } = useImportInstallmentsToPlan(reports)
+  const { isImportingInstallments, importFromLatestClosedMonth, latestClosedMonthLabel } =
+    useImportInstallmentsToPlan(reports)
 
   const openPlannedModal = useExpenseStore(state => state.openPlannedModal)
   const plannedBudget = useExpenseStore(state => state.plannedBudget)
@@ -44,7 +41,10 @@ export const PlannedMonthSection = ({
     state => state.prefillPlannedBudgetFromLastReport,
   )
 
-  const { applyLatestClosedReportBudget } = useApplyClosedReportBudgetToPlan(reports, setPlannedBudget)
+  const { applyLatestClosedReportBudget } = useApplyClosedReportBudgetToPlan(
+    reports,
+    setPlannedBudget,
+  )
 
   useEffect(() => {
     void prefillPlannedBudgetFromLastReport()
@@ -72,14 +72,15 @@ export const PlannedMonthSection = ({
             . Ese resumen suele liquidarse en{' '}
             <strong className="text-ds-text dark:text-dark-text">{paymentMonthLabel}</strong>. Acá
             proyectás lo que estimás{' '}
-            <strong className="text-ds-text dark:text-dark-text">a pagar en {planTargetMonthName}</strong>
-            . El
-            presupuesto de referencia se puede cargar desde el último mes cerrado y editarlo. Con{' '}
-            <strong className="text-ds-text dark:text-dark-text">Traer cuotas</strong> sumás al plan
-            la siguiente cuota de cada compra en tarjeta del último mes cerrado (ej. si en el reporte
-            figura 1/3, entra 2/3). Los gastos nuevos los cargás con Agregar gasto. Nada de esto suma
-            al ledger de {ledgerMonthLabel}; si registrás una compra en cuotas en el ledger, la siguiente
-            cuota puede aparecer sola en este plan.
+            <strong className="text-ds-text dark:text-dark-text">
+              a pagar en {planTargetMonthName}
+            </strong>
+            . El presupuesto de referencia se puede cargar desde el último mes cerrado y editarlo.
+            Con <strong className="text-ds-text dark:text-dark-text">Traer cuotas</strong> sumás al
+            plan la siguiente cuota de cada compra en tarjeta del último mes cerrado (ej. si en el
+            reporte figura 1/3, entra 2/3). Los gastos nuevos los cargás con Agregar gasto. Nada de
+            esto suma al ledger de {ledgerMonthLabel}; si registrás una compra en cuotas en el
+            ledger, la siguiente cuota puede aparecer sola en este plan.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 w-full">
@@ -111,9 +112,11 @@ export const PlannedMonthSection = ({
             variant="secondary"
             size="sm"
             leadingIcon="archive"
-            disabled={reportsLoading}
+            disabled={reportsLoading && reports.length === 0}
             title={
-              reportsLoading ? 'Cargando reportes…' : 'Usa el presupuesto del último mes cerrado'
+              reportsLoading && reports.length === 0
+                ? 'Cargando reportes…'
+                : 'Usa el presupuesto del último mes cerrado'
             }
             onClick={() => {
               void applyLatestClosedReportBudget()
@@ -152,7 +155,7 @@ export const PlannedMonthSection = ({
             totalSpent={plannedTotalSpent}
             remainingBalance={plannedRemaining}
             isOverBudget={isPlannedOverBudget}
-            budgetFooterNote={`A pagar en ${planTargetMonthName}`}
+            budgetFooterNote={`Para ${planTargetMonthName}`}
             remainingFooterNote={
               isPlannedOverBudget
                 ? 'Superaste el presupuesto planificado'
