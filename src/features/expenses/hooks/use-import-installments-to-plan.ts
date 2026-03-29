@@ -6,10 +6,10 @@ import { fetchReports } from '../../reports/services/report-service'
 import type { MonthlyReport } from '../../../types/database'
 
 export const useImportInstallmentsToPlan = (reports: MonthlyReport[]) => {
-  const [importing, setImporting] = useState(false)
+  const [isImportingInstallments, setIsImportingInstallments] = useState(false)
 
   const importFromLatestClosedMonth = useCallback(async () => {
-    setImporting(true)
+    setIsImportingInstallments(true)
     try {
       let report: MonthlyReport | undefined = reports[0]
       if (!report) {
@@ -27,37 +27,37 @@ export const useImportInstallmentsToPlan = (reports: MonthlyReport[]) => {
       }
 
       const { plannedExpenses, addPlannedExpense } = useExpenseStore.getState()
-      const toAdd = collectNextInstallmentPlanPayloadsFromReportExpenses(
+      const installmentPayloads = collectNextInstallmentPlanPayloadsFromReportExpenses(
         report.expenses,
         plannedExpenses,
       )
 
-      if (toAdd.length === 0) {
+      if (installmentPayloads.length === 0) {
         toast.info(
           'No hay cuotas pendientes para traer (o ya están en el plan). Solo se incluyen gastos en tarjeta con cuota X/Y y X menor al total.',
         )
         return
       }
 
-      for (const p of toAdd) {
-        addPlannedExpense(p)
+      for (const payload of installmentPayloads) {
+        addPlannedExpense(payload)
       }
 
       toast.success(
-        toAdd.length === 1
+        installmentPayloads.length === 1
           ? 'Se agregó 1 cuota al plan desde el mes cerrado'
-          : `Se agregaron ${toAdd.length} cuotas al plan desde el mes cerrado`,
+          : `Se agregaron ${installmentPayloads.length} cuotas al plan desde el mes cerrado`,
       )
     } finally {
-      setImporting(false)
+      setIsImportingInstallments(false)
     }
   }, [reports])
 
-  const latestClosedLabel = reports[0]?.label
+  const latestClosedMonthLabel = reports[0]?.label
 
   return {
-    importing,
+    isImportingInstallments,
     importFromLatestClosedMonth,
-    latestClosedLabel,
+    latestClosedMonthLabel,
   }
 }

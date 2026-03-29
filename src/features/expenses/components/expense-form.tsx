@@ -1,4 +1,4 @@
-import { forwardRef, useMemo } from 'react'
+import { useMemo } from 'react'
 import clsx from 'clsx'
 import { convertUsdCardToArs } from '../../../core/math/fx'
 import { formatCurrency } from '../../../core/math/format'
@@ -6,48 +6,10 @@ import { useExpenseFormContext } from '../context/expense-form-context'
 import { CategoryPicker } from './category-picker'
 import { Button } from '../../../shared/ui/button'
 import { Icon } from '../../../shared/ui/icon'
+import { FormField, FormTextInput } from '../../../shared/ui/form-field'
 import { BANKS_AR } from '../../../types'
 
-const Field = ({
-  label,
-  error,
-  children,
-}: {
-  label: string
-  error?: string
-  children: React.ReactNode
-}) => (
-  <div className="flex flex-col gap-1">
-    <label className="text-[11px] font-semibold text-ds-secondary dark:text-dark-secondary uppercase tracking-widest">
-      {label}
-    </label>
-    {children}
-    {error && <p className="text-xs text-red-500">{error}</p>}
-  </div>
-)
-
-const StitchInput = forwardRef<
-  HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement> & { error?: string; prefix?: string }
->(({ error, prefix, ...props }, ref) => (
-  <div
-    className={`flex items-center border rounded-lg bg-surface dark:bg-dark-surface px-3 py-2.5 transition-all focus-within:ring-1 focus-within:ring-primary/50 ${error ? 'border-red-400' : 'border-ds-border dark:border-dark-border'}`}
-  >
-    {prefix && (
-      <span className="text-ds-secondary dark:text-dark-secondary mr-2 text-sm shrink-0">
-        {prefix}
-      </span>
-    )}
-    <input
-      ref={ref}
-      {...props}
-      className="w-full bg-transparent border-none p-0 outline-none text-ds-text dark:text-dark-text font-medium text-sm placeholder:text-ds-secondary/60 dark:placeholder:text-dark-secondary/60 placeholder:font-normal"
-    />
-  </div>
-))
-StitchInput.displayName = 'StitchInput'
-
-interface ExpenseFormProps {
+type ExpenseFormProps = {
   onCancel?: () => void
   submitLabel?: string
 }
@@ -64,26 +26,28 @@ export const ExpenseForm = ({ onCancel, submitLabel = 'Guardar gasto' }: Expense
     fxCard,
   } = useExpenseFormContext()
 
-  const isUsd = fields.cardAmountCurrency === 'USD'
+  const isUsdCardAmount = fields.cardAmountCurrency === 'USD'
 
-  const previewArs = useMemo(() => {
-    if (!showInstallments || !isUsd || fxCard.venta == null || fxCard.isPending) return null
-    const n = parseFloat(fields.totalAmount)
-    if (!fields.totalAmount || Number.isNaN(n) || n <= 0) return null
-    return convertUsdCardToArs(n, fxCard.venta)
-  }, [showInstallments, isUsd, fxCard.venta, fxCard.isPending, fields.totalAmount])
+  const arsEquivalentPreview = useMemo(() => {
+    if (!showInstallments || !isUsdCardAmount || fxCard.venta == null || fxCard.isPending) {
+      return null
+    }
+    const parsedAmount = parseFloat(fields.totalAmount)
+    if (!fields.totalAmount || Number.isNaN(parsedAmount) || parsedAmount <= 0) return null
+    return convertUsdCardToArs(parsedAmount, fxCard.venta)
+  }, [showInstallments, isUsdCardAmount, fxCard.venta, fxCard.isPending, fields.totalAmount])
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      <Field label="Descripción">
-        <StitchInput
+      <FormField label="Descripción">
+        <FormTextInput
           type="text"
           placeholder="¿Qué compraste?"
           value={fields.description}
           onChange={e => setField('description', e.target.value)}
           autoFocus
         />
-      </Field>
+      </FormField>
 
       <div className="flex gap-3">
         <div className={showInstallments ? 'flex-1' : 'w-full'}>
@@ -91,9 +55,9 @@ export const ExpenseForm = ({ onCancel, submitLabel = 'Guardar gasto' }: Expense
         </div>
         {showInstallments && (
           <div className="flex-1">
-            <Field label="Cuotas" error={errors.currentInstallment || errors.totalInstallments}>
+            <FormField label="Cuotas" error={errors.currentInstallment || errors.totalInstallments}>
               <div className="flex items-center gap-2">
-                <StitchInput
+                <FormTextInput
                   type="number"
                   min="1"
                   placeholder="1"
@@ -104,7 +68,7 @@ export const ExpenseForm = ({ onCancel, submitLabel = 'Guardar gasto' }: Expense
                 <span className="text-ds-secondary dark:text-dark-secondary text-sm font-medium shrink-0">
                   de
                 </span>
-                <StitchInput
+                <FormTextInput
                   type="number"
                   min="1"
                   placeholder="6"
@@ -113,7 +77,7 @@ export const ExpenseForm = ({ onCancel, submitLabel = 'Guardar gasto' }: Expense
                   error={errors.totalInstallments}
                 />
               </div>
-            </Field>
+            </FormField>
           </div>
         )}
       </div>
@@ -152,24 +116,24 @@ export const ExpenseForm = ({ onCancel, submitLabel = 'Guardar gasto' }: Expense
         </div>
       )}
 
-      <Field
-        label={showInstallments && isUsd ? 'Monto en USD' : 'Monto'}
+      <FormField
+        label={showInstallments && isUsdCardAmount ? 'Monto en USD' : 'Monto'}
         error={errors.totalAmount}
       >
-        <StitchInput
+        <FormTextInput
           ref={amountRef}
           type="number"
           min="0"
           step="0.01"
           placeholder="0.00"
-          prefix={showInstallments && isUsd ? 'US$' : '$'}
+          prefix={showInstallments && isUsdCardAmount ? 'US$' : '$'}
           value={fields.totalAmount}
           onChange={e => setField('totalAmount', e.target.value)}
           error={errors.totalAmount}
         />
-      </Field>
+      </FormField>
 
-      {showInstallments && isUsd && (
+      {showInstallments && isUsdCardAmount && (
         <div className="text-[11px] text-ds-secondary dark:text-dark-secondary leading-relaxed space-y-1">
           {fxCard.isPending && <p>Consultando cotización dólar tarjeta (DolarApi)…</p>}
           {fxCard.isError && !fxCard.isPending && (
@@ -186,9 +150,9 @@ export const ExpenseForm = ({ onCancel, submitLabel = 'Guardar gasto' }: Expense
               )}
             </p>
           )}
-          {previewArs != null && (
+          {arsEquivalentPreview != null && (
             <p className="font-medium text-ds-text dark:text-dark-text">
-              Equivalente en tu resumen: {formatCurrency(previewArs)} ARS{' '}
+              Equivalente en tu resumen: {formatCurrency(arsEquivalentPreview)} ARS{' '}
               <span className="text-xs text-ds-secondary dark:text-dark-secondary">
                 *aproximado
               </span>
@@ -198,7 +162,7 @@ export const ExpenseForm = ({ onCancel, submitLabel = 'Guardar gasto' }: Expense
       )}
 
       {requiresBank && (
-        <Field label="Banco" error={errors.banco}>
+        <FormField label="Banco" error={errors.banco}>
           <div className="relative">
             <select
               value={fields.banco}
@@ -221,7 +185,7 @@ export const ExpenseForm = ({ onCancel, submitLabel = 'Guardar gasto' }: Expense
               />
             </span>
           </div>
-        </Field>
+        </FormField>
       )}
 
       {showInstallments && (

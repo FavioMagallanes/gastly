@@ -16,11 +16,11 @@ interface CloseMonthModalProps {
  * Muestra un resumen y al confirmar guarda el snapshot en Supabase.
  */
 export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) => {
-  const budget = useExpenseStore(s => s.budget)
-  const expenses = useExpenseStore(s => s.expenses)
-  const getSummary = useExpenseStore(s => s.getSummary)
-  const resetAll = useExpenseStore(s => s.resetAll)
-  const resetExpenses = useExpenseStore(s => s.resetExpenses)
+  const budget = useExpenseStore(state => state.budget)
+  const expenses = useExpenseStore(state => state.expenses)
+  const getSummary = useExpenseStore(state => state.getSummary)
+  const resetAll = useExpenseStore(state => state.resetAll)
+  const resetExpenses = useExpenseStore(state => state.resetExpenses)
   const [submitting, setSubmitting] = useState(false)
   const [keepBudget, setKeepBudget] = useState(true)
 

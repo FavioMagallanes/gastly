@@ -7,8 +7,8 @@ import { getPlanMonthContext } from '../../../core/date/plan-month-labels'
 import { Modal } from '../../../shared/ui/modal'
 
 export const EditExpenseModal = () => {
-  const editingExpense = useExpenseStore(s => s.editingExpense)
-  const closeModal = useExpenseStore(s => s.closeModal)
+  const editingExpense = useExpenseStore(state => state.editingExpense)
+  const closeModal = useExpenseStore(state => state.closeModal)
 
   if (!editingExpense) return null
 
@@ -16,8 +16,8 @@ export const EditExpenseModal = () => {
 }
 
 const EditExpenseModalContent = ({ onClose }: { onClose: () => void }) => {
-  const editingExpense = useExpenseStore(s => s.editingExpense)!
-  const expenseModalTarget = useExpenseStore(s => s.expenseModalTarget)
+  const editingExpense = useExpenseStore(state => state.editingExpense)!
+  const expenseModalTarget = useExpenseStore(state => state.expenseModalTarget)
   const formValue = useEditExpenseForm(editingExpense, onClose)
 
   useEffect(() => {

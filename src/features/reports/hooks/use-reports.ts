@@ -5,49 +5,64 @@ import type { ReportInsert, ReportUpdatePayload } from '../services/report-servi
 import { useAuth } from '../../auth'
 import { toast } from 'sonner'
 
+const notifyReportsLoadError = (message: string) => {
+  toast.error(`Error al cargar reportes: ${message}`)
+}
+
+type FetchReportsOutcome = Awaited<ReturnType<typeof fetchReports>>
+
+const clearReportsState = (
+  setReports: (value: MonthlyReport[]) => void,
+  setLoading: (value: boolean) => void,
+) => {
+  setReports([])
+  setLoading(false)
+}
+
+const commitFetchReportsOutcome = (
+  { data, error }: FetchReportsOutcome,
+  setReports: (value: MonthlyReport[]) => void,
+  setLoading: (value: boolean) => void,
+) => {
+  if (error) {
+    notifyReportsLoadError(error)
+  } else {
+    setReports(data)
+  }
+  setLoading(false)
+}
+
 export const useReports = () => {
   const { user } = useAuth()
   const [reports, setReports] = useState<MonthlyReport[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedReport, setSelectedReport] = useState<MonthlyReport | null>(null)
 
-  const loadReports = useCallback(async () => {
+  const syncReportsFromServer = useCallback(async () => {
     if (!user) {
-      setReports([])
-      setLoading(false)
+      clearReportsState(setReports, setLoading)
       return
     }
     setLoading(true)
-    const { data, error } = await fetchReports()
-    if (error) {
-      toast.error(`Error al cargar reportes: ${error}`)
-    } else {
-      setReports(data)
-    }
-    setLoading(false)
+    const outcome = await fetchReports()
+    commitFetchReportsOutcome(outcome, setReports, setLoading)
   }, [user])
 
   useEffect(() => {
     let cancelled = false
 
-    const load = async () => {
+    const run = async () => {
       if (!user) {
-        setReports([])
-        setLoading(false)
+        clearReportsState(setReports, setLoading)
         return
       }
       setLoading(true)
-      const { data, error } = await fetchReports()
+      const outcome = await fetchReports()
       if (cancelled) return
-      if (error) {
-        toast.error(`Error al cargar reportes: ${error}`)
-      } else {
-        setReports(data)
-      }
-      setLoading(false)
+      commitFetchReportsOutcome(outcome, setReports, setLoading)
     }
 
-    void load()
+    void run()
     return () => {
       cancelled = true
     }
@@ -58,13 +73,13 @@ export const useReports = () => {
       const { error } = await closeMonth(report)
       if (error) {
         toast.error(`Error al cerrar el mes: ${error}`)
-      } else {
-        toast.success(`Reporte "${report.label}" guardado`)
-        await loadReports()
-        onSuccess?.()
+        return
       }
+      toast.success(`Reporte "${report.label}" guardado`)
+      await syncReportsFromServer()
+      onSuccess?.()
     },
-    [loadReports],
+    [syncReportsFromServer],
   )
 
   const handleDeleteReport = useCallback(
@@ -72,13 +87,13 @@ export const useReports = () => {
       const { error } = await deleteReport(id)
       if (error) {
         toast.error(`Error al eliminar: ${error}`)
-      } else {
-        toast.success(`Reporte "${label}" eliminado`)
-        setReports(prev => prev.filter(r => r.id !== id))
-        if (selectedReport?.id === id) setSelectedReport(null)
+        return
       }
+      toast.success(`Reporte "${label}" eliminado`)
+      setReports(prev => prev.filter(report => report.id !== id))
+      setSelectedReport(prev => (prev?.id === id ? null : prev))
     },
-    [selectedReport],
+    [],
   )
 
   const handleUpdateReport = useCallback(
@@ -90,10 +105,10 @@ export const useReports = () => {
       }
       toast.success('Reporte actualizado')
       setReports(prev => prev.map(report => (report.id === id ? data : report)))
-      if (selectedReport?.id === id) setSelectedReport(data)
+      setSelectedReport(prev => (prev?.id === id ? data : prev))
       return true
     },
-    [selectedReport],
+    [],
   )
 
   return {
@@ -104,6 +119,6 @@ export const useReports = () => {
     handleCloseMonth,
     handleDeleteReport,
     handleUpdateReport,
-    refreshReports: loadReports,
+    refreshReports: syncReportsFromServer,
   }
 }

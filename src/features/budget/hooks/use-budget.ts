@@ -4,9 +4,9 @@ import { useExpenseStore } from '../../../store/expense-store'
 import { calcTotalSpent, calcRemainingBalance } from '../../../core/math/finance'
 
 export const useBudget = () => {
-  const budget = useExpenseStore(s => s.budget)
-  const expenses = useExpenseStore(s => s.expenses)
-  const setBudget = useExpenseStore(s => s.setBudget)
+  const budget = useExpenseStore(state => state.budget)
+  const expenses = useExpenseStore(state => state.expenses)
+  const setBudget = useExpenseStore(state => state.setBudget)
 
   const summary = useMemo(() => {
     const totalSpent = calcTotalSpent(expenses)

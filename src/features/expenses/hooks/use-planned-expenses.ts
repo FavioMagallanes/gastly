@@ -5,10 +5,10 @@ import { useExpenseStore } from '../../../store/expense-store'
 import type { Expense } from '../../../types'
 
 export const usePlannedExpenses = () => {
-  const plannedExpenses = useExpenseStore(s => s.plannedExpenses)
-  const deletePlannedExpense = useExpenseStore(s => s.deletePlannedExpense)
-  const openEditModal = useExpenseStore(s => s.openEditModal)
-  const clearPlan = useExpenseStore(s => s.clearPlan)
+  const plannedExpenses = useExpenseStore(state => state.plannedExpenses)
+  const deletePlannedExpense = useExpenseStore(state => state.deletePlannedExpense)
+  const openEditModal = useExpenseStore(state => state.openEditModal)
+  const clearPlan = useExpenseStore(state => state.clearPlan)
 
   const handleEdit = (expense: Expense) => openEditModal(expense, 'planned')
 

@@ -47,14 +47,14 @@ export const useThemeProvider = () => {
   }, [theme])
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = (e: MediaQueryListEvent) => {
+    const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleColorSchemeChange = (event: MediaQueryListEvent) => {
       if (!localStorage.getItem(STORAGE_KEY)) {
-        setTheme(e.matches ? 'dark' : 'light')
+        setTheme(event.matches ? 'dark' : 'light')
       }
     }
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
+    colorSchemeQuery.addEventListener('change', handleColorSchemeChange)
+    return () => colorSchemeQuery.removeEventListener('change', handleColorSchemeChange)
   }, [])
 
   const toggleTheme = useCallback(() => {

@@ -11,10 +11,10 @@ interface UseExpensesReturn {
 }
 
 export const useExpenses = (): UseExpensesReturn => {
-  const expenses = useExpenseStore(s => s.expenses)
-  const updateExpense = useExpenseStore(s => s.updateExpense)
-  const deleteExpense = useExpenseStore(s => s.deleteExpense)
-  const openEditModal = useExpenseStore(s => s.openEditModal)
+  const expenses = useExpenseStore(state => state.expenses)
+  const updateExpense = useExpenseStore(state => state.updateExpense)
+  const deleteExpense = useExpenseStore(state => state.deleteExpense)
+  const openEditModal = useExpenseStore(state => state.openEditModal)
 
   const handleEdit = (expense: Expense) => openEditModal(expense, 'current')
 

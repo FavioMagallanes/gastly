@@ -113,13 +113,13 @@ interface IconProps {
 export const Icon = ({ name, size = 'base', className = '' }: IconProps) => {
   const icon = iconMap[name as IconName] ?? iconMap.other
   const sizeMap = { sm: 14, base: 16, xl: 20 } as const
-  const px = sizeMap[size] ?? 16
+  const sizeInPixels = sizeMap[size] ?? 16
 
   return (
     <span className={`inline-flex items-center justify-center shrink-0 ${className}`}>
       <HugeiconsIcon
         icon={icon}
-        size={px}
+        size={sizeInPixels}
         color="currentColor"
         strokeWidth={1.75}
         className="shrink-0"

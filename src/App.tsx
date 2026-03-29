@@ -7,12 +7,12 @@ import { ThemeProvider } from './shared/ui/theme-provider'
 import { queryClient } from './shared/query/query-client'
 import { useTheme } from './shared/hooks/use-theme'
 import { Spinner } from './shared/ui/spinner'
-import { Toaster } from 'sonner'
+import { AppToaster } from './shared/ui/app-toaster'
 
 const AppContent = () => {
   const { user, loading } = useAuth()
-  const isModalOpen = useExpenseStore(s => s.isModalOpen)
-  const editingExpense = useExpenseStore(s => s.editingExpense)
+  const isModalOpen = useExpenseStore(state => state.isModalOpen)
+  const editingExpense = useExpenseStore(state => state.editingExpense)
   const { theme } = useTheme()
 
   if (loading) {
@@ -23,45 +23,21 @@ const AppContent = () => {
     )
   }
 
-  if (!user) {
-    return (
-      <>
-        <AuthScreen />
-        <Toaster
-          position="bottom-right"
-          richColors
-          theme={theme}
-          toastOptions={{
-            style: {
-              fontFamily: "'Inter', system-ui, sans-serif",
-              fontSize: '13px',
-            },
-          }}
-        />
-      </>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-bg transition-colors">
-      <Dashboard />
+    <>
+      {!user ? (
+        <AuthScreen />
+      ) : (
+        <div className="min-h-screen bg-white dark:bg-dark-bg transition-colors">
+          <Dashboard />
 
-      {isModalOpen && (
-        <>{editingExpense ? <EditExpenseModal /> : <NewExpenseModal />}</>
+          {isModalOpen && (
+            <>{editingExpense ? <EditExpenseModal /> : <NewExpenseModal />}</>
+          )}
+        </div>
       )}
-
-      <Toaster
-        position="bottom-right"
-        richColors
-        theme={theme}
-        toastOptions={{
-          style: {
-            fontFamily: "'Inter', system-ui, sans-serif",
-            fontSize: '13px',
-          },
-        }}
-      />
-    </div>
+      <AppToaster theme={theme} />
+    </>
   )
 }
 

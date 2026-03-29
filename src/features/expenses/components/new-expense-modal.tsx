@@ -7,9 +7,9 @@ import { useExpenseForm } from '../hooks/use-expense-form'
 import { ExpenseForm } from './expense-form'
 
 export const NewExpenseModal = () => {
-  const closeModal = useExpenseStore(s => s.closeModal)
-  const expenseModalTarget = useExpenseStore(s => s.expenseModalTarget)
-  const plannedCount = useExpenseStore(s => s.plannedExpenses.length)
+  const closeModal = useExpenseStore(state => state.closeModal)
+  const expenseModalTarget = useExpenseStore(state => state.expenseModalTarget)
+  const plannedCount = useExpenseStore(state => state.plannedExpenses.length)
   const formValue = useExpenseForm(closeModal)
 
   const isPlanned = expenseModalTarget === 'planned'

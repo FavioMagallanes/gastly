@@ -3,7 +3,7 @@ import type { Expense } from '../../../types'
 import type { MonthlyReport } from '../../../types/database'
 
 /** Formatea un número como moneda ARS para el PDF. */
-const fmt = (value: number): string =>
+const formatArsCurrency = (value: number): string =>
   new Intl.NumberFormat('es-AR', {
     style: 'currency',
     currency: 'ARS',
@@ -49,24 +49,27 @@ export const generateReportPdf = async (
   // ── Tabla de gastos ──
   doc.setTextColor(0)
 
-  const total = expenses.reduce((sum, e) => sum + e.totalAmount, 0)
+  const expensesTotal = expenses.reduce(
+    (runningTotal, expense) => runningTotal + expense.totalAmount,
+    0,
+  )
 
   autoTable(doc, {
     startY: 38,
     head: [['Descripción', 'Categoría', 'Cuota', 'Monto']],
     body: expenses.map(expense => {
-      const cat = CATEGORIES.find(c => c.id === expense.categoryId)
+      const category = CATEGORIES.find(entry => entry.id === expense.categoryId)
       const label = CATEGORY_LABELS[expense.categoryId] ?? expense.categoryId
       const categoryText =
-        cat?.requiresBank && expense.banco ? `${label} · ${expense.banco}` : label
+        category?.requiresBank && expense.banco ? `${label} · ${expense.banco}` : label
       return [
         expense.description || label,
         categoryText,
         expense.installment ?? '—',
-        fmt(expense.totalAmount),
+        formatArsCurrency(expense.totalAmount),
       ]
     }),
-    foot: [['', '', 'Total', fmt(total)]],
+    foot: [['', '', 'Total', formatArsCurrency(expensesTotal)]],
     theme: 'striped',
     headStyles: {
       fillColor: [0, 95, 173],

@@ -35,10 +35,10 @@ export const resolveInstallmentForSubmit = (
   currentInstallment: string,
   totalInstallments: string,
 ): string => {
-  const c = currentInstallment.trim()
-  const t = totalInstallments.trim()
-  if (c === '' && t === '') return '1/1'
-  return `${c}/${t}`
+  const trimmedCurrent = currentInstallment.trim()
+  const trimmedTotal = totalInstallments.trim()
+  if (trimmedCurrent === '' && trimmedTotal === '') return '1/1'
+  return `${trimmedCurrent}/${trimmedTotal}`
 }
 
 export const validateExpense = (
@@ -70,26 +70,26 @@ export const validateExpense = (
   }
 
   if (showInstallments) {
-    const cRaw = fields.currentInstallment.trim()
-    const tRaw = fields.totalInstallments.trim()
-    const bothEmpty = cRaw === '' && tRaw === ''
+    const trimmedCurrentInstallment = fields.currentInstallment.trim()
+    const trimmedTotalInstallments = fields.totalInstallments.trim()
+    const bothEmpty = trimmedCurrentInstallment === '' && trimmedTotalInstallments === ''
 
     if (!bothEmpty) {
-      const current = parseInt(fields.currentInstallment, 10)
-      const total = parseInt(fields.totalInstallments, 10)
+      const parsedCurrent = parseInt(fields.currentInstallment, 10)
+      const parsedTotal = parseInt(fields.totalInstallments, 10)
 
-      if (!cRaw || isNaN(current) || current < 1) {
+      if (!trimmedCurrentInstallment || isNaN(parsedCurrent) || parsedCurrent < 1) {
         errors.currentInstallment = 'Cuota actual inválida'
       }
 
-      if (!tRaw || isNaN(total) || total < 1) {
+      if (!trimmedTotalInstallments || isNaN(parsedTotal) || parsedTotal < 1) {
         errors.totalInstallments = 'Total de cuotas inválido'
       }
 
       if (
         !errors.currentInstallment &&
         !errors.totalInstallments &&
-        current > total
+        parsedCurrent > parsedTotal
       ) {
         errors.currentInstallment = 'No puede superar el total'
       }
