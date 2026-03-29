@@ -1,28 +1,30 @@
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { convertUsdCardToArs } from '../../../core/math/fx'
 import { CATEGORIES, isCardCategory } from '../../../types'
 import type { Expense } from '../../../types'
-import { validateExpense, resolveInstallmentForSubmit } from '../../expenses/utils/validation'
+import { useDolarTarjeta } from '../../exchange-rates'
+import { validateExpense, resolveInstallmentForSubmit, emptyExpenseFormFields } from '../../expenses/utils/validation'
+import { buildFxCardState, buildValidateExpenseFx } from '../../expenses/utils/expense-form-fx'
 import type { ExpenseFormFields, ExpenseErrors } from '../../expenses/utils/validation'
-
-const INITIAL_STATE: ExpenseFormFields = {
-  description: '',
-  categoryId: 'otros',
-  totalAmount: '',
-  currentInstallment: '',
-  totalInstallments: '',
-  banco: '',
-}
 
 const toFormState = (expense: Expense): ExpenseFormFields => {
   const [current, total] = (expense.installment ?? '').split('/')
+  const base = emptyExpenseFormFields()
+  const hasUsd =
+    expense.originalAmountUsd != null &&
+    expense.fxRateUsdArs != null &&
+    !Number.isNaN(expense.originalAmountUsd)
+
   return {
+    ...base,
     description: expense.description ?? '',
     categoryId: expense.categoryId,
-    totalAmount: String(expense.totalAmount),
+    totalAmount: hasUsd ? String(expense.originalAmountUsd) : String(expense.totalAmount),
     currentInstallment: current ?? '',
     totalInstallments: total ?? '',
     banco: expense.banco ?? '',
+    cardAmountCurrency: hasUsd ? 'USD' : 'ARS',
   }
 }
 
@@ -35,7 +37,7 @@ export const useReportExpenseForm = (
   onSuccess?: () => void,
 ) => {
   const [fields, setFields] = useState<ExpenseFormFields>(() =>
-    initial ? toFormState(initial) : INITIAL_STATE,
+    initial ? toFormState(initial) : emptyExpenseFormFields(),
   )
   const [errors, setErrors] = useState<ExpenseErrors>({})
   const amountRef = useRef<HTMLInputElement>(null)
@@ -43,6 +45,9 @@ export const useReportExpenseForm = (
   const showInstallments = isCardCategory(fields.categoryId)
   const categoryObj = CATEGORIES.find(c => c.id === fields.categoryId)
   const requiresBank = !!categoryObj?.requiresBank
+
+  const dolarQuery = useDolarTarjeta(showInstallments)
+  const fxCard = buildFxCardState(dolarQuery)
 
   const setField = <K extends keyof ExpenseFormFields>(key: K, value: ExpenseFormFields[K]) => {
     setFields(prev => {
@@ -53,10 +58,15 @@ export const useReportExpenseForm = (
         if (newCat?.type !== 'credit_card') {
           next.currentInstallment = ''
           next.totalInstallments = ''
+          next.cardAmountCurrency = 'ARS'
         }
         if (!newCat?.requiresBank) {
           next.banco = ''
         }
+      }
+
+      if (key === 'cardAmountCurrency') {
+        next.totalAmount = ''
       }
 
       return next
@@ -66,7 +76,8 @@ export const useReportExpenseForm = (
   }
 
   const validate = (): boolean => {
-    const nextErrors = validateExpense(fields, requiresBank, showInstallments)
+    const fx = buildValidateExpenseFx(showInstallments, fields.cardAmountCurrency, dolarQuery)
+    const nextErrors = validateExpense(fields, requiresBank, showInstallments, fx)
     setErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
   }
@@ -74,10 +85,30 @@ export const useReportExpenseForm = (
   const handleSubmit = () => {
     if (!validate()) return
 
+    const usdMode = showInstallments && fields.cardAmountCurrency === 'USD'
+    const usd = parseFloat(fields.totalAmount)
+    const venta = dolarQuery.data?.venta
+
+    let totalAmount: number
+    let originalAmountUsd: number | undefined
+    let fxRateUsdArs: number | undefined
+
+    if (usdMode && venta != null) {
+      totalAmount = convertUsdCardToArs(usd, venta)
+      originalAmountUsd = usd
+      fxRateUsdArs = venta
+    } else {
+      totalAmount = parseFloat(fields.totalAmount)
+      originalAmountUsd = undefined
+      fxRateUsdArs = undefined
+    }
+
     const base = {
       description: fields.description || undefined,
       categoryId: fields.categoryId,
-      totalAmount: parseFloat(fields.totalAmount),
+      totalAmount,
+      originalAmountUsd,
+      fxRateUsdArs,
       installment: showInstallments
         ? resolveInstallmentForSubmit(fields.currentInstallment, fields.totalInstallments)
         : undefined,
@@ -109,5 +140,6 @@ export const useReportExpenseForm = (
     setField,
     handleSubmit,
     requiresBank,
+    fxCard,
   }
 }

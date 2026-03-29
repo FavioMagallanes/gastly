@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Modal } from '../../../shared/ui/modal'
 import { Button } from '../../../shared/ui/button'
+import { getPlanMonthContext } from '../../../core/date/plan-month-labels'
 import { formatCurrency } from '../../../core/math/format'
 import { useExpenseStore } from '../../../store/expense-store'
 import type { ReportInsert } from '../services/report-service'
@@ -24,6 +25,7 @@ export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) =>
   const [keepBudget, setKeepBudget] = useState(true)
 
   const summary = getSummary()
+  const { nextMonthLabel } = getPlanMonthContext()
 
   const monthLabel = new Date().toLocaleDateString('es-AR', {
     month: 'long',
@@ -102,7 +104,7 @@ export const CloseMonthModal = ({ onClose, onConfirm }: CloseMonthModalProps) =>
             className="size-4 rounded border-ds-border dark:border-dark-border accent-primary cursor-pointer"
           />
           <span className="text-[13px] text-ds-text dark:text-dark-text">
-            Mantener presupuesto para el próximo mes
+            Mantener presupuesto para {nextMonthLabel}
           </span>
         </label>
 

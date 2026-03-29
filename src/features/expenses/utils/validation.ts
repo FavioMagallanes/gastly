@@ -1,3 +1,5 @@
+export type CardAmountCurrency = 'ARS' | 'USD'
+
 export interface ExpenseFormFields {
   description: string
   categoryId: string
@@ -5,9 +7,26 @@ export interface ExpenseFormFields {
   currentInstallment: string
   totalInstallments: string
   banco: string
+  /** Solo tarjeta: moneda del monto ingresado. */
+  cardAmountCurrency: CardAmountCurrency
 }
 
 export type ExpenseErrors = Partial<Record<keyof ExpenseFormFields, string>>
+
+export const emptyExpenseFormFields = (): ExpenseFormFields => ({
+  description: '',
+  categoryId: 'otros',
+  totalAmount: '',
+  currentInstallment: '',
+  totalInstallments: '',
+  banco: '',
+  cardAmountCurrency: 'ARS',
+})
+
+export type ValidateExpenseFx =
+  | { status: 'ready'; venta: number }
+  | { status: 'pending' }
+  | { status: 'error' }
 
 /**
  * Tarjeta: si ambos campos de cuotas van vacíos, se persiste como pago único `1/1`.
@@ -26,12 +45,24 @@ export const validateExpense = (
   fields: ExpenseFormFields,
   requiresBank: boolean,
   showInstallments: boolean,
+  fx?: ValidateExpenseFx,
 ): ExpenseErrors => {
   const errors: ExpenseErrors = {}
   const amount = parseFloat(fields.totalAmount)
+  const isUsdCard = showInstallments && fields.cardAmountCurrency === 'USD'
 
-  if (!fields.totalAmount || isNaN(amount) || amount <= 0) {
-    errors.totalAmount = 'Ingresá un monto válido mayor a 0'
+  if (isUsdCard) {
+    if (fx?.status === 'pending') {
+      errors.totalAmount = 'Cargando cotización dólar tarjeta…'
+    } else if (fx?.status === 'error' || fx?.status !== 'ready') {
+      errors.totalAmount = 'No se pudo obtener el dólar tarjeta. Reintentá.'
+    } else if (!fields.totalAmount || isNaN(amount) || amount <= 0) {
+      errors.totalAmount = 'Ingresá un monto en USD mayor a 0'
+    }
+  } else {
+    if (!fields.totalAmount || isNaN(amount) || amount <= 0) {
+      errors.totalAmount = 'Ingresá un monto válido mayor a 0'
+    }
   }
 
   if (requiresBank && !fields.banco) {

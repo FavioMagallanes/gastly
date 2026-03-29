@@ -7,6 +7,10 @@ interface BudgetSummaryProps {
   totalSpent: number
   remainingBalance: number
   isOverBudget: boolean
+  /** Sustituye el pie de la tarjeta de presupuesto (por defecto: período actual). */
+  budgetFooterNote?: string
+  /** Sustituye el mensaje bajo el saldo (por defecto: en línea / superado). */
+  remainingFooterNote?: string
 }
 
 export const BudgetSummary = ({
@@ -14,6 +18,8 @@ export const BudgetSummary = ({
   totalSpent,
   remainingBalance,
   isOverBudget,
+  budgetFooterNote,
+  remainingFooterNote,
 }: BudgetSummaryProps) => {
   const pct = budgetAmount > 0 ? Math.min((totalSpent / budgetAmount) * 100, 100) : 0
   const barColor = isOverBudget ? 'bg-red-500' : pct > 80 ? 'bg-orange-400' : 'bg-primary'
@@ -47,7 +53,8 @@ export const BudgetSummary = ({
             className={`text-xs mt-6 font-medium flex items-center gap-1 ${isOverBudget ? 'text-red-500' : 'text-green-600'}`}
           >
             <Icon name={isOverBudget ? 'trending-down' : 'trending-up'} size="sm" />
-            {isOverBudget ? 'Superaste el presupuesto' : 'En línea este mes'}
+            {remainingFooterNote ??
+              (isOverBudget ? 'Superaste el presupuesto' : 'En línea este mes')}
           </p>
         }
       />
@@ -56,7 +63,7 @@ export const BudgetSummary = ({
         value={formatCurrency(budgetAmount)}
         footer={
           <p className="text-xs text-ds-secondary dark:text-dark-secondary mt-6">
-            Período: {currentPeriod}
+            {budgetFooterNote ?? `Período: ${currentPeriod}`}
           </p>
         }
       />

@@ -42,6 +42,11 @@ export const ExpenseItem = ({ expense, onEdit, onDelete }: ExpenseItemProps) => 
           <p className="text-sm font-semibold text-ds-text dark:text-dark-text">
             {formatCurrency(expense.totalAmount)}
           </p>
+          {expense.originalAmountUsd != null && expense.fxRateUsdArs != null && (
+            <p className="text-[10px] text-ds-secondary dark:text-dark-secondary mt-0.5 max-w-[200px] ml-auto leading-tight">
+              US$ {expense.originalAmountUsd.toFixed(2)} @ {formatCurrency(expense.fxRateUsdArs)} (tarjeta)
+            </p>
+          )}
           {expense.installment && (
             <p className="text-[8px] text-ds-secondary dark:text-dark-secondary uppercase font-bold tracking-tighter">
               Monto

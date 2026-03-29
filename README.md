@@ -9,6 +9,8 @@ Monthly expense tracker built with React, TypeScript, and Supabase. Manage a per
 - **Expense CRUD** — Create, edit, and delete entries with confirmation dialogs.
 - **Categories** — BBVA, Supervielle, Préstamo, Servicios, Colegio, Otros — each with its own icon and color.
 - **Installments** — Record payments in installments (e.g. 3/12) with dedicated numeric inputs.
+- **Next-month plan** — Separate planned budget and expenses for the following calendar month; pull the next card installment rows from the last closed report; amounts stay out of the current ledger until you register them as current-month expenses.
+- **Card USD / ARS** — For credit-card categories, enter the amount in pesos or in USD; USD uses the **dólar tarjeta** (sell) rate from the public [DolarApi](https://dolarapi.com) snapshot. Stored totals remain in ARS for budgets and sums; original USD and the rate used are kept for display.
 - **Month close** — Snapshot the current period to Supabase and reset local data for the next cycle.
 - **PDF export** — Generate a report with selected expenses, entirely client-side.
 - **Share** — Send the PDF via WhatsApp or other apps using the Web Share API (mobile).
@@ -22,6 +24,7 @@ Monthly expense tracker built with React, TypeScript, and Supabase. Manage a per
 - **Build** — [Vite 8](https://vite.dev)
 - **Styles** — [TailwindCSS 4](https://tailwindcss.com)
 - **State** — [Zustand 5](https://zustand.docs.pmnd.rs) with persist middleware
+- **Server state / fetching** — [TanStack Query 5](https://tanstack.com/query) for HTTP data (e.g. FX quotes) with caching and stale times
 - **Auth & DB** — [Supabase](https://supabase.com) (Auth + PostgreSQL with RLS)
 - **PDF** — [jsPDF](https://github.com/parallax/jsPDF) + [jspdf-autotable](https://github.com/simonbengtsson/jsPDF-AutoTable)
 - **Toasts** — [Sonner](https://sonner.emilkowal.ski)
@@ -36,17 +39,21 @@ The project follows a **feature-based architecture** with clear separation of co
 ```
 src/
 ├── core/               # Shared core logic
-│   ├── math/           # Financial calculations and formatting
+│   ├── date/           # Calendar helpers (e.g. plan month labels)
+│   ├── expense/        # Planned installments / report → plan helpers
+│   ├── math/           # Financial calculations, formatting, FX helpers
 │   ├── storage/        # Persistence configuration
 │   └── supabase/       # Supabase client
 ├── features/           # Business modules (barrel exports)
 │   ├── auth/           # Authentication
 │   ├── budget/         # Budget management
 │   ├── dashboard/      # Main view
+│   ├── exchange-rates/ # Public FX quotes (DolarApi) + React Query hooks
 │   ├── expenses/       # Expense CRUD
 │   └── reports/        # Month close, PDF, sharing
 ├── shared/             # Shared components and hooks
 │   ├── hooks/          # useTheme, etc.
+│   ├── query/          # QueryClient singleton
 │   └── ui/             # Button, Modal, Icon, Spinner, etc.
 ├── store/              # Global Zustand store
 └── types/              # Types and interfaces
@@ -146,6 +153,8 @@ CREATE POLICY "Users can manage own reports"
 See [`supabase/schema.sql`](./supabase/schema.sql) for the full schema.
 
 Current-month expenses are persisted in **localStorage** (per-user key) via Zustand persist. They are saved to Supabase as an immutable snapshot only when the month is closed.
+
+**External HTTP (optional UX):** The app may `GET` public JSON from [dolarapi.com](https://dolarapi.com) for **dólar tarjeta** only when you use a credit-card category and choose USD. No personal or amount data is sent in that request.
 
 ## Contributing
 

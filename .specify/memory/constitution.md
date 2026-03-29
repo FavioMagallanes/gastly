@@ -1,7 +1,7 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: (template) → 1.0.0; amended 1.0.0 → 1.0.1; amended 1.0.1 → 1.0.2; amended 1.0.2 → 2.0.0 (MAJOR); amended 2.0.0 → 2.1.0 (MINOR)
+Version change: (template) → 1.0.0; amended 1.0.0 → 1.0.1; amended 1.0.1 → 1.0.2; amended 1.0.2 → 2.0.0 (MAJOR); amended 2.0.0 → 2.1.0 (MINOR); amended 2.1.0 → 2.2.0 (MINOR)
 Added principles:
   - I. Precisión Matemática
   - II. Privacidad de Datos (AMENDED v2.0.0: permitir cloud storage con condiciones)
@@ -19,6 +19,13 @@ Templates requiring updates:
   ⚠ .specify/templates/spec-template.md — verificar secciones de privacidad y validaciones numéricas
   ⚠ .specify/templates/tasks-template.md — asegurar tipos de tarea para cálculos financieros y privacidad
 Deferred TODOs: ninguno
+
+AMENDMENT v2.2.0 — Justificación:
+  Se incorpora `@tanstack/react-query` para caché de datos asíncronos en cliente (sin telemetría).
+  Se permiten peticiones HTTP GET a APIs públicas de cotización (p. ej. DolarApi) exclusivamente
+  para tipos de cambio agregados; no se envían datos financieros personales ni montos del usuario.
+  El flujo tarjeta en **pesos (ARS)** conserva el criterio de entrada rápida (Principio III); el
+  flujo opcional en **USD** añade la elección de moneda y depende de red para la cotización.
 
 AMENDMENT v2.0.0 — Justificación:
   El usuario necesita acceso multi-dispositivo (PC + móvil) a sus reportes mensuales.
@@ -65,6 +72,8 @@ terceros sin consentimiento explícito.
   - `@supabase/supabase-js` — cloud storage con RLS (aprobada v2.0.0).
   - `jspdf` + `jspdf-autotable` — generación de PDF 100 % client-side, sin red ni telemetría
     (aprobada v2.0.0).
+  - `@tanstack/react-query` — estado y caché de datos remotos en cliente; sin telemetría por defecto
+    (aprobada v2.2.0).
 
 ### III. UX de Entrada Rápida
 
@@ -122,6 +131,11 @@ mantenibilidad sobre la brevedad.
   (propósito, tamaño, política de privacidad); las de telemetría están prohibidas.
 - **Compatibilidad offline**: El mes activo (budget + gastos) funciona sin conexión.
   El cierre de mes y consulta de reportes históricos requieren conexión.
+- **Cotizaciones externas (solo lectura)**: Se permiten peticiones GET a fuentes públicas de
+  cotización (p. ej. DolarApi) únicamente para obtener tipos de cambio agregados. Está prohibido
+  enviar en esas peticiones datos identificables del usuario, montos de gastos o presupuestos.
+  La conversión USD→ARS para tarjeta puede quedar no disponible sin red; el resto del flujo
+  en pesos sigue funcionando offline.
 
 ## Flujo de Desarrollo
 
@@ -147,4 +161,4 @@ cualquier decisión de diseño o implementación individual.
 - Ante ambigüedad en la interpretación de un principio, prevalece la lectura más restrictiva
   hasta que una enmienda formal la aclare.
 
-**Version**: 2.1.0 | **Ratified**: 2026-03-23 | **Last Amended**: 2026-03-24
+**Version**: 2.2.0 | **Ratified**: 2026-03-23 | **Last Amended**: 2026-03-29

@@ -1,4 +1,7 @@
-import { forwardRef } from 'react'
+import { forwardRef, useMemo } from 'react'
+import clsx from 'clsx'
+import { convertUsdCardToArs } from '../../../core/math/fx'
+import { formatCurrency } from '../../../core/math/format'
 import { useExpenseFormContext } from '../context/expense-form-context'
 import { CategoryPicker } from './category-picker'
 import { Button } from '../../../shared/ui/button'
@@ -31,7 +34,9 @@ const StitchInput = forwardRef<
     className={`flex items-center border rounded-lg bg-surface dark:bg-dark-surface px-3 py-2.5 transition-all focus-within:ring-1 focus-within:ring-primary/50 ${error ? 'border-red-400' : 'border-ds-border dark:border-dark-border'}`}
   >
     {prefix && (
-      <span className="text-ds-secondary dark:text-dark-secondary mr-2 text-sm">{prefix}</span>
+      <span className="text-ds-secondary dark:text-dark-secondary mr-2 text-sm shrink-0">
+        {prefix}
+      </span>
     )}
     <input
       ref={ref}
@@ -42,18 +47,31 @@ const StitchInput = forwardRef<
 ))
 StitchInput.displayName = 'StitchInput'
 
-/**
- * ExpenseForm — Lee todo del contexto (ExpenseFormContext).
- * Solo recibe `onCancel` como prop porque varía según el consumidor.
- * Debe estar envuelto en un provider que inyecte el contexto.
- */
 interface ExpenseFormProps {
   onCancel?: () => void
+  submitLabel?: string
 }
 
-export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
-  const { fields, errors, showInstallments, amountRef, setField, handleSubmit, requiresBank } =
-    useExpenseFormContext()
+export const ExpenseForm = ({ onCancel, submitLabel = 'Guardar gasto' }: ExpenseFormProps) => {
+  const {
+    fields,
+    errors,
+    showInstallments,
+    amountRef,
+    setField,
+    handleSubmit,
+    requiresBank,
+    fxCard,
+  } = useExpenseFormContext()
+
+  const isUsd = fields.cardAmountCurrency === 'USD'
+
+  const previewArs = useMemo(() => {
+    if (!showInstallments || !isUsd || fxCard.venta == null || fxCard.isPending) return null
+    const n = parseFloat(fields.totalAmount)
+    if (!fields.totalAmount || Number.isNaN(n) || n <= 0) return null
+    return convertUsdCardToArs(n, fxCard.venta)
+  }, [showInstallments, isUsd, fxCard.venta, fxCard.isPending, fields.totalAmount])
 
   return (
     <div className="flex flex-col gap-5 w-full">
@@ -64,20 +82,6 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
           value={fields.description}
           onChange={e => setField('description', e.target.value)}
           autoFocus
-        />
-      </Field>
-
-      <Field label="Monto" error={errors.totalAmount}>
-        <StitchInput
-          ref={amountRef}
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="0.00"
-          prefix="$"
-          value={fields.totalAmount}
-          onChange={e => setField('totalAmount', e.target.value)}
-          error={errors.totalAmount}
         />
       </Field>
 
@@ -114,6 +118,85 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         )}
       </div>
 
+      {showInstallments && (
+        <div className="flex flex-col gap-2">
+          <span className="text-[11px] font-semibold text-ds-secondary dark:text-dark-secondary uppercase tracking-widest">
+            Moneda del monto
+          </span>
+          <div className="flex p-0.5 rounded-lg border border-ds-border dark:border-dark-border bg-surface/50 dark:bg-dark-surface/50 gap-0.5">
+            <button
+              type="button"
+              onClick={() => setField('cardAmountCurrency', 'ARS')}
+              className={clsx(
+                'flex-1 rounded-md py-2 text-xs font-semibold transition-colors cursor-pointer',
+                fields.cardAmountCurrency === 'ARS'
+                  ? 'bg-primary text-white'
+                  : 'text-ds-secondary dark:text-dark-secondary hover:text-ds-text dark:hover:text-dark-text',
+              )}
+            >
+              Pesos (ARS)
+            </button>
+            <button
+              type="button"
+              onClick={() => setField('cardAmountCurrency', 'USD')}
+              className={clsx(
+                'flex-1 rounded-md py-2 text-xs font-semibold transition-colors cursor-pointer',
+                fields.cardAmountCurrency === 'USD'
+                  ? 'bg-primary text-white'
+                  : 'text-ds-secondary dark:text-dark-secondary hover:text-ds-text dark:hover:text-dark-text',
+              )}
+            >
+              Dólares (tarjeta)
+            </button>
+          </div>
+        </div>
+      )}
+
+      <Field
+        label={showInstallments && isUsd ? 'Monto en USD' : 'Monto'}
+        error={errors.totalAmount}
+      >
+        <StitchInput
+          ref={amountRef}
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="0.00"
+          prefix={showInstallments && isUsd ? 'US$' : '$'}
+          value={fields.totalAmount}
+          onChange={e => setField('totalAmount', e.target.value)}
+          error={errors.totalAmount}
+        />
+      </Field>
+
+      {showInstallments && isUsd && (
+        <div className="text-[11px] text-ds-secondary dark:text-dark-secondary leading-relaxed space-y-1">
+          {fxCard.isPending && <p>Consultando cotización dólar tarjeta (DolarApi)…</p>}
+          {fxCard.isError && !fxCard.isPending && (
+            <p className="text-red-500">No se pudo cargar la cotización. Probá de nuevo.</p>
+          )}
+          {fxCard.venta != null && !fxCard.isPending && !fxCard.isError && (
+            <p>
+              <span className="font-semibold text-ds-text dark:text-dark-text">
+                Dólar tarjeta venta:
+              </span>{' '}
+              {formatCurrency(fxCard.venta)}
+              {fxCard.updatedAtLabel && (
+                <span className="opacity-80"> · {fxCard.updatedAtLabel}</span>
+              )}
+            </p>
+          )}
+          {previewArs != null && (
+            <p className="font-medium text-ds-text dark:text-dark-text">
+              Equivalente en tu resumen: {formatCurrency(previewArs)} ARS{' '}
+              <span className="text-xs text-ds-secondary dark:text-dark-secondary">
+                *aproximado
+              </span>
+            </p>
+          )}
+        </div>
+      )}
+
       {requiresBank && (
         <Field label="Banco" error={errors.banco}>
           <div className="relative">
@@ -145,8 +228,10 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
         <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg px-3 py-2.5">
           <Icon name="info" size="base" className="text-primary mt-0.5" />
           <p className="text-xs text-ds-secondary dark:text-dark-secondary leading-relaxed">
-            <span className="font-semibold text-ds-text dark:text-dark-text">Pro tip:</span> Indicá
-            la cuota currente y el total (ej: 1 de 6).
+            <span className="font-semibold text-ds-text dark:text-dark-text">Pro tip:</span> Cuotas
+            reales: cuota actual y total (ej. 2 de 6). Suscripciones fijas (Netflix, etc.): dejá
+            vacío o 1/1. Compras en el exterior en USD usan la cotización{' '}
+            <strong>dólar tarjeta</strong> al guardar.
           </p>
         </div>
       )}
@@ -158,7 +243,7 @@ export const ExpenseForm = ({ onCancel }: ExpenseFormProps) => {
           </Button>
         )}
         <Button variant="primary" size="md" trailingIcon="check" onClick={handleSubmit}>
-          Guardar gasto
+          {submitLabel}
         </Button>
       </div>
     </div>

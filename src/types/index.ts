@@ -39,6 +39,7 @@ export const BANKS_AR = [
   'Banco del Sol',
   'Wilobank',
   'Reba',
+  'Mercado Pago',
 ]
 
 export const CATEGORIES: Category[] = [
@@ -187,17 +188,22 @@ export const CATEGORY_LABELS: Record<string, string> = CATEGORIES.reduce(
  *
  * - `totalAmount`  → Monto que se paga **este mes** (la cuota, no el total del producto).
  * - `installment`  → Texto libre con formato "X/Y" (ej: "1/6").
- *                     Solo se usa cuando la categoría es tarjeta (BBVA o SUPERVIELLE).
- *                     Es informativo; NO se usa para calcular montos.
+ *                     En tarjeta: cuotas reales; vacío o 1/1 = pago único / suscripción fija.
+ *                     Es informativo para totales; el plan próximo mes usa X/Y para avanzar cuotas.
  * - `category`     → Método de pago / origen del gasto.
  * - `description`  → Detalle opcional del gasto (ej: "Heladera", "Netflix").
+ * - `originalAmountUsd` / `fxRateUsdArs` → Si el gasto se cargó en USD (tarjeta); `totalAmount` es ARS equivalente.
  */
 export interface Expense {
   id: string
   description?: string
   categoryId: string // id de la categoría
-  /** Monto de la cuota que se paga este mes */
+  /** Monto de la cuota que se paga este mes (siempre en ARS para totales y presupuesto). */
   totalAmount: number
+  /** Monto ingresado en USD cuando aplica conversión dólar tarjeta. */
+  originalAmountUsd?: number
+  /** Cotización dólar tarjeta **venta** usada al guardar. */
+  fxRateUsdArs?: number
   /**
    * Indicador de cuota en formato libre "X/Y" (ej: "2/6").
    * Solo presente cuando category es BBVA o SUPERVIELLE.
@@ -205,6 +211,12 @@ export interface Expense {
   installment?: string
   registeredAt: string
   banco?: string // solo si la categoría lo requiere
+  /**
+   * Solo en `plannedExpenses`: esta fila es la **siguiente cuota** generada desde un gasto del
+   * ledger actual (`id` del gasto del mes). Si editás o borrás ese gasto, el plan se actualiza o
+   * se quita esta fila. Tras cerrar mes (vaciar ledger), se limpia el enlace y el ítem sigue en el plan.
+   */
+  forwardedFromLedgerId?: string
 }
 
 export interface Budget {

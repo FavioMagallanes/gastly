@@ -1,24 +1,24 @@
 import { createContext, useContext } from 'react'
+import type { ExpenseFormFields, ExpenseErrors } from '../utils/validation'
 
-export interface ExpenseFormFields {
-  description: string
-  categoryId: string
-  totalAmount: string
-  currentInstallment: string
-  totalInstallments: string
-  banco: string // nuevo campo
+export type { ExpenseFormFields, ExpenseErrors }
+
+export type ExpenseFormFxState = {
+  venta: number | undefined
+  isPending: boolean
+  isError: boolean
+  updatedAtLabel: string | undefined
 }
-
-export type ExpenseFormErrors = Partial<Record<keyof ExpenseFormFields, string>>
 
 export interface ExpenseFormContextValue {
   fields: ExpenseFormFields
-  errors: ExpenseFormErrors
+  errors: ExpenseErrors
   showInstallments: boolean
   amountRef: React.RefObject<HTMLInputElement | null>
   setField: <K extends keyof ExpenseFormFields>(key: K, value: ExpenseFormFields[K]) => void
   handleSubmit: () => void
-  requiresBank: boolean // nuevo campo
+  requiresBank: boolean
+  fxCard: ExpenseFormFxState
 }
 
 export const ExpenseFormContext = createContext<ExpenseFormContextValue | null>(null)

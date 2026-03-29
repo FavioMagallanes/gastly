@@ -3,6 +3,7 @@ import { useExpenseStore } from '../../../store/expense-store'
 import { useEditExpenseForm } from '../hooks/use-edit-expense-form'
 import { ExpenseFormProvider } from '../context/expense-form-provider'
 import { ExpenseForm } from './expense-form'
+import { getPlanMonthContext } from '../../../core/date/plan-month-labels'
 import { Modal } from '../../../shared/ui/modal'
 
 export const EditExpenseModal = () => {
@@ -16,6 +17,7 @@ export const EditExpenseModal = () => {
 
 const EditExpenseModalContent = ({ onClose }: { onClose: () => void }) => {
   const editingExpense = useExpenseStore(s => s.editingExpense)!
+  const expenseModalTarget = useExpenseStore(s => s.expenseModalTarget)
   const formValue = useEditExpenseForm(editingExpense, onClose)
 
   useEffect(() => {
@@ -23,10 +25,15 @@ const EditExpenseModalContent = ({ onClose }: { onClose: () => void }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const isPlanned = expenseModalTarget === 'planned'
+  const { nextMonthLabel } = getPlanMonthContext()
+  const title = isPlanned ? `Editar plan (${nextMonthLabel})` : 'Editar gasto'
+  const submitLabel = isPlanned ? 'Guardar en el plan' : 'Guardar gasto'
+
   return (
-    <Modal title="Editar gasto" icon="pencil-edit" onClose={onClose}>
+    <Modal title={title} icon="pencil-edit" onClose={onClose}>
       <ExpenseFormProvider value={formValue}>
-        <ExpenseForm onCancel={onClose} />
+        <ExpenseForm onCancel={onClose} submitLabel={submitLabel} />
       </ExpenseFormProvider>
     </Modal>
   )

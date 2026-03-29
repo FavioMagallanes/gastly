@@ -16,7 +16,7 @@ export const useExpenses = (): UseExpensesReturn => {
   const deleteExpense = useExpenseStore(s => s.deleteExpense)
   const openEditModal = useExpenseStore(s => s.openEditModal)
 
-  const handleEdit = (expense: Expense) => openEditModal(expense)
+  const handleEdit = (expense: Expense) => openEditModal(expense, 'current')
 
   const handleDelete = (id: string) => {
     confirmToast({

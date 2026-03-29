@@ -9,7 +9,14 @@ const STORAGE_PREFIX = 'expense-tracker-v1'
 export const getStorageKey = (userId?: string): string =>
   userId ? `${STORAGE_PREFIX}-${userId}` : STORAGE_PREFIX
 
-export const partialize = (state: { budget: Budget | null; expenses: Expense[] }) => ({
+export const partialize = (state: {
+  budget: Budget | null
+  expenses: Expense[]
+  plannedExpenses: Expense[]
+  plannedBudget: Budget | null
+}) => ({
   budget: state.budget,
   expenses: state.expenses,
+  plannedExpenses: state.plannedExpenses,
+  plannedBudget: state.plannedBudget,
 })
