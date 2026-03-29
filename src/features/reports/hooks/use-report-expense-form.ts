@@ -28,7 +28,9 @@ export const useReportExpenseForm = (
   const categoryObj = CATEGORIES.find(category => category.id === fields.categoryId)
   const requiresBank = !!categoryObj?.requiresBank
 
-  const dolarQuery = useDolarTarjeta(showInstallments)
+  const dolarQuery = useDolarTarjeta(
+    showInstallments && fields.cardAmountCurrency === 'USD',
+  )
   const fxCard = buildFxCardState(dolarQuery)
 
   const setField = <K extends keyof ExpenseFormFields>(key: K, value: ExpenseFormFields[K]) => {

@@ -10,7 +10,7 @@ Monthly expense tracker built with React, TypeScript, and Supabase. Manage a per
 - **Categories** — BBVA, Supervielle, Préstamo, Servicios, Colegio, Otros — each with its own icon and color.
 - **Installments** — Record payments in installments (e.g. 3/12) with dedicated numeric inputs.
 - **Next-month plan** — Separate planned budget and expenses for the following calendar month; pull the next card installment rows from the last closed report; amounts stay out of the current ledger until you register them as current-month expenses.
-- **Card USD / ARS** — For credit-card categories, enter the amount in pesos or in USD; USD uses the **dólar tarjeta** (sell) rate from the public [DolarApi](https://dolarapi.com) snapshot. Stored totals remain in ARS for budgets and sums; original USD and the rate used are kept for display.
+- **Card USD / ARS** — For credit-card categories, enter the amount in pesos or in USD. USD conversion uses the **dólar tarjeta** (sell) rate from the public [DolarApi](https://dolarapi.com) `GET` endpoint, fetched only when you choose USD (TanStack Query: 30 min stale time, cached in the shared `QueryClient`). Stored totals stay in ARS; original USD and the rate at save time are kept for display.
 - **Month close** — Snapshot the current period to Supabase and reset local data for the next cycle.
 - **PDF export** — Generate a report with selected expenses, entirely client-side.
 - **Share** — Send the PDF via WhatsApp or other apps using the Web Share API (mobile).
@@ -24,7 +24,7 @@ Monthly expense tracker built with React, TypeScript, and Supabase. Manage a per
 - **Build** — [Vite 8](https://vite.dev)
 - **Styles** — [TailwindCSS 4](https://tailwindcss.com)
 - **State** — [Zustand 5](https://zustand.docs.pmnd.rs) with persist middleware
-- **Server state / fetching** — [TanStack Query 5](https://tanstack.com/query) for HTTP data (e.g. FX quotes) with caching and stale times
+- **Server state / fetching** — [TanStack Query 5](https://tanstack.com/query) (`queryOptions` + `useQuery`) for the USD card rate; `refetchOnWindowFocus` is off globally in [`query-client.ts`](./src/shared/query/query-client.ts)
 - **Auth & DB** — [Supabase](https://supabase.com) (Auth + PostgreSQL with RLS)
 - **PDF** — [jsPDF](https://github.com/parallax/jsPDF) + [jspdf-autotable](https://github.com/simonbengtsson/jsPDF-AutoTable)
 - **Toasts** — [Sonner](https://sonner.emilkowal.ski)
@@ -48,8 +48,9 @@ src/
 │   ├── auth/           # Authentication
 │   ├── budget/         # Budget management
 │   ├── dashboard/      # Main view
-│   ├── exchange-rates/ # Public FX quotes (DolarApi) + React Query hooks
+│   ├── exchange-rates/ # DolarApi client + `dolarTarjetaQueryOptions` + `useDolarTarjeta`
 │   ├── expenses/       # Expense CRUD
+│   ├── plan/           # Next-month plan sync to Supabase (remote row + debounced upsert)
 │   └── reports/        # Month close, PDF, sharing
 ├── shared/             # Shared components and hooks
 │   ├── hooks/          # useTheme, etc.
@@ -60,6 +61,16 @@ src/
 ```
 
 Each feature exposes a **barrel export** (`index.ts`) as its public API. Internal components, hooks, and services remain encapsulated.
+
+### Exchange rate (USD card)
+
+| Piece | Role |
+| ----- | ---- |
+| [`fetch-dolar-tarjeta.ts`](./src/features/exchange-rates/api/fetch-dolar-tarjeta.ts) | `GET` + JSON validation (`venta` / `compra` positive numbers) |
+| [`dolar-tarjeta-query.ts`](./src/features/exchange-rates/queries/dolar-tarjeta-query.ts) | `queryOptions` + stable `queryKey` for invalidation / prefetch |
+| [`use-dolar-tarjeta.ts`](./src/features/exchange-rates/hooks/use-dolar-tarjeta.ts) | `useQuery({ ...dolarTarjetaQueryOptions, enabled })` — **enabled only when the form uses USD** on a card category |
+
+Conversion to ARS for validation and save uses **big.js** in [`core/math/fx.ts`](./src/core/math/fx.ts).
 
 ## Methodology: Spec-Driven Development
 
