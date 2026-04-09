@@ -60,11 +60,38 @@ create policy "Users can update own reports"
 -- ============================================================================
 
 create table if not exists public.user_monthly_plan (
-  user_id            uuid primary key references auth.users(id) on delete cascade,
+  user_id            uuid not null references auth.users(id) on delete cascade,
+  target_month       text not null,
   planned_expenses   jsonb not null default '[]'::jsonb,
   planned_budget     jsonb,
   updated_at         timestamptz not null default now()
 );
+
+alter table public.user_monthly_plan
+  add column if not exists target_month text;
+
+update public.user_monthly_plan
+set target_month = to_char((date_trunc('month', now()) + interval '1 month'), 'YYYY-MM')
+where target_month is null;
+
+alter table public.user_monthly_plan
+  alter column target_month set not null;
+
+alter table public.user_monthly_plan
+  drop constraint if exists user_monthly_plan_pkey;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'user_monthly_plan_pkey'
+      and conrelid = 'public.user_monthly_plan'::regclass
+  ) then
+    alter table public.user_monthly_plan
+      add constraint user_monthly_plan_pkey primary key (user_id, target_month);
+  end if;
+end $$;
 
 alter table public.user_monthly_plan enable row level security;
 

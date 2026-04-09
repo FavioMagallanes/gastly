@@ -1,3 +1,4 @@
+import { getPlanMonthContext } from '../date/plan-month-labels'
 import type { Expense, Budget } from '../../types'
 
 const STORAGE_PREFIX = 'expense-tracker-v1'
@@ -12,11 +13,15 @@ export const getStorageKey = (userId?: string): string =>
 export const partialize = (state: {
   budget: Budget | null
   expenses: Expense[]
+  plannedMonthKey: string
   plannedExpenses: Expense[]
   plannedBudget: Budget | null
 }) => ({
   budget: state.budget,
   expenses: state.expenses,
+  plannedMonthKey: state.plannedMonthKey,
   plannedExpenses: state.plannedExpenses,
   plannedBudget: state.plannedBudget,
 })
+
+export const getActivePlanMonthKey = (): string => getPlanMonthContext().planTargetMonthKey

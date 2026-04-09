@@ -1,6 +1,10 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { getStorageKey, partialize } from '../core/storage/persist-config'
+import {
+  getActivePlanMonthKey,
+  getStorageKey,
+  partialize,
+} from '../core/storage/persist-config'
 import type { ExpenseStore } from './expense-store-types'
 import { createDataSlice } from './expense-store-data-slice'
 import { createNavSlice } from './expense-store-nav-slice'
@@ -19,6 +23,10 @@ export const useExpenseStore = create<ExpenseStore>()(
       partialize: storeState => partialize(storeState),
       merge: (persisted, current) => {
         const persistedPartial = (persisted ?? {}) as Partial<ExpenseStore>
+        const activePlanMonthKey = getActivePlanMonthKey()
+        const persistedPlanMonthKey = persistedPartial.plannedMonthKey
+        const shouldReusePersistedPlan = persistedPlanMonthKey === activePlanMonthKey
+
         return {
           ...current,
           budget:
@@ -26,11 +34,13 @@ export const useExpenseStore = create<ExpenseStore>()(
           expenses: Array.isArray(persistedPartial.expenses)
             ? persistedPartial.expenses
             : current.expenses,
-          plannedExpenses: Array.isArray(persistedPartial.plannedExpenses)
-            ? persistedPartial.plannedExpenses
-            : current.plannedExpenses,
+          plannedMonthKey: activePlanMonthKey,
+          plannedExpenses:
+            shouldReusePersistedPlan && Array.isArray(persistedPartial.plannedExpenses)
+              ? persistedPartial.plannedExpenses
+              : current.plannedExpenses,
           plannedBudget:
-            persistedPartial.plannedBudget !== undefined
+            shouldReusePersistedPlan && persistedPartial.plannedBudget !== undefined
               ? persistedPartial.plannedBudget
               : current.plannedBudget,
         }

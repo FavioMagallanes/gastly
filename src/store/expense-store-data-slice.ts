@@ -1,3 +1,4 @@
+import { getPlanMonthContext } from '../core/date/plan-month-labels'
 import type { StateCreator } from 'zustand'
 import { calcTotalSpent, calcRemainingBalance } from '../core/math/finance'
 import { buildForwardInstallmentPlanRow } from '../core/expense/planned-advance'
@@ -16,7 +17,11 @@ export const createDataSlice: StateCreator<ExpenseStore, [], [], DataSlice> = (s
 
   setBudget: (amount: number) => set({ budget: buildBudget(amount) }),
 
-  setPlannedBudget: (amount: number) => set({ plannedBudget: buildBudget(amount) }),
+  setPlannedBudget: (amount: number) =>
+    set({
+      plannedMonthKey: getPlanMonthContext().planTargetMonthKey,
+      plannedBudget: buildBudget(amount),
+    }),
 
   prefillPlannedBudgetFromLastReport: async () => {
     if (get().plannedBudget !== null) return true
@@ -37,6 +42,7 @@ export const createDataSlice: StateCreator<ExpenseStore, [], [], DataSlice> = (s
       if (forwardedPlanRow) nextPlanned = [...nextPlanned, forwardedPlanRow]
       return {
         expenses: [...state.expenses, newExpense],
+        plannedMonthKey: getPlanMonthContext().planTargetMonthKey,
         plannedExpenses: nextPlanned,
       }
     }),
@@ -55,6 +61,7 @@ export const createDataSlice: StateCreator<ExpenseStore, [], [], DataSlice> = (s
         expenses: state.expenses.map(expense =>
           expense.id === id ? merged : expense,
         ),
+        plannedMonthKey: getPlanMonthContext().planTargetMonthKey,
         plannedExpenses: nextPlanned,
       }
     }),
@@ -62,6 +69,7 @@ export const createDataSlice: StateCreator<ExpenseStore, [], [], DataSlice> = (s
   deleteExpense: (id: string) =>
     set(state => ({
       expenses: state.expenses.filter(expense => expense.id !== id),
+      plannedMonthKey: getPlanMonthContext().planTargetMonthKey,
       plannedExpenses: state.plannedExpenses.filter(
         plannedExpense => plannedExpense.forwardedFromLedgerId !== id,
       ),
@@ -69,11 +77,13 @@ export const createDataSlice: StateCreator<ExpenseStore, [], [], DataSlice> = (s
 
   addPlannedExpense: raw =>
     set(state => ({
+      plannedMonthKey: getPlanMonthContext().planTargetMonthKey,
       plannedExpenses: [...state.plannedExpenses, buildExpense(raw)],
     })),
 
   updatePlannedExpense: (id, changes) =>
     set(state => ({
+      plannedMonthKey: getPlanMonthContext().planTargetMonthKey,
       plannedExpenses: state.plannedExpenses.map(expense =>
         expense.id === id ? { ...expense, ...changes } : expense,
       ),
@@ -81,13 +91,20 @@ export const createDataSlice: StateCreator<ExpenseStore, [], [], DataSlice> = (s
 
   deletePlannedExpense: (id: string) =>
     set(state => ({
+      plannedMonthKey: getPlanMonthContext().planTargetMonthKey,
       plannedExpenses: state.plannedExpenses.filter(expense => expense.id !== id),
     })),
 
-  clearPlan: () => set({ plannedExpenses: [], plannedBudget: null }),
+  clearPlan: () =>
+    set({
+      plannedMonthKey: getPlanMonthContext().planTargetMonthKey,
+      plannedExpenses: [],
+      plannedBudget: null,
+    }),
 
   hydratePlannedFromRemote: payload =>
     set({
+      plannedMonthKey: payload.plannedMonthKey,
       plannedExpenses: payload.plannedExpenses,
       plannedBudget: payload.plannedBudget,
     }),

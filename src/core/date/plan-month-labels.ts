@@ -16,15 +16,21 @@ const startOfCalendarMonth = (date: Date): Date =>
 const addCalendarMonths = (monthStart: Date, monthsToAdd: number): Date =>
   new Date(monthStart.getFullYear(), monthStart.getMonth() + monthsToAdd, 1)
 
+const monthStorageKey = (date: Date): string => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  return `${year}-${month}`
+}
+
 /**
  * Etiquetas alineadas al flujo tarjeta/resumen: cargás gastos en un mes calendario (ledger),
- * esos consumos suelen liquidarse en el mes siguiente (pago), y el plan adelantado apunta al
- * mes posterior (lo que viene después del ciclo de pago inmediato).
+ * esos consumos suelen liquidarse en el mes siguiente (pago), y el plan adelantado apunta a ese
+ * próximo mes calendario.
  */
 export const getPlanMonthContext = (referenceDate: Date = new Date()) => {
   const ledgerMonthStart = startOfCalendarMonth(referenceDate)
   const paymentMonthStart = addCalendarMonths(ledgerMonthStart, 1)
-  const planTargetMonthStart = addCalendarMonths(ledgerMonthStart, 2)
+  const planTargetMonthStart = addCalendarMonths(ledgerMonthStart, 1)
 
   return {
     /** Mes del ledger donde registrás gastos hoy. */
@@ -33,5 +39,7 @@ export const getPlanMonthContext = (referenceDate: Date = new Date()) => {
     paymentMonthLabel: monthYearEsAr(paymentMonthStart),
     /** Mes objetivo del plan (pago esperado), solo nombre sin año. */
     planTargetMonthName: monthNameOnlyEsAr(planTargetMonthStart),
+    /** Clave estable YYYY-MM para persistir el plan del próximo mes. */
+    planTargetMonthKey: monthStorageKey(planTargetMonthStart),
   }
 }

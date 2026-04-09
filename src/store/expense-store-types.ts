@@ -15,6 +15,8 @@ export type NavSlice = {
 export type DataSlice = {
   budget: Budget | null
   expenses: Expense[]
+  /** Clave YYYY-MM del mes objetivo al que pertenece el plan persistido. */
+  plannedMonthKey: string
   plannedExpenses: Expense[]
   /** Presupuesto de referencia para el plan del mes calendario siguiente (no es el mes en curso). */
   plannedBudget: Budget | null
@@ -31,6 +33,7 @@ export type DataSlice = {
   clearPlan: () => void
   /** Reemplaza plan local con datos de Supabase (tras fetch). */
   hydratePlannedFromRemote: (payload: {
+    plannedMonthKey: string
     plannedExpenses: Expense[]
     plannedBudget: Budget | null
   }) => void
